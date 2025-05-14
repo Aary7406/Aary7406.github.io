@@ -1,6 +1,6 @@
 // src/components/Skills.jsx
 import { useEffect, useRef } from 'react';
-import { motion, useInView } from 'framer-motion';
+import { color, motion, useInView } from 'framer-motion';
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
 
@@ -127,6 +127,11 @@ const skillsData = [
     icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3 2h18v20H3V2zm17 19V3H4v18h16z"/><path d="M12 18h4v1h-4zM6.5 10.5L8 9l3.5 3.5L8 16l-1.5-1.5L9 12z"/></svg>', 
     color: 'bg-ctp-yellow' 
   },
+  {
+  name: 'Next.js',
+  icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3 2h18v20H3V2zm17 19V3H4v18h16z"/><path d="M19 7.01v9.98c0 .3-.15.59-.4.76l-5.81-7.28v6.42h-1.5V9.47c0-.3.15-.59.4-.76l5.82 7.28V9.57h1.49v-2.56z"/><path d="M7.01 9.5v7.33H5.5V7.01h7.22v1.49H7.01z"/></svg>',
+  color: 'bg-ctp-pink'
+},
 ];
 
 const Skills = () => {
