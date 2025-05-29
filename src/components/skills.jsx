@@ -132,6 +132,21 @@ const skillsData = [
   icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3 2h18v20H3V2zm17 19V3H4v18h16z"/><path d="M19 7.01v9.98c0 .3-.15.59-.4.76l-5.81-7.28v6.42h-1.5V9.47c0-.3.15-.59.4-.76l5.82 7.28V9.57h1.49v-2.56z"/><path d="M7.01 9.5v7.33H5.5V7.01h7.22v1.49H7.01z"/></svg>',
   color: 'bg-ctp-pink'
 },
+{
+  name: 'Three.js',
+  icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M6.5 17.5L12 14l5.5 3.5v-7L12 7l-5.5 3.5v7z"/><path d="M12 2L3 7v10l9 5 9-5V7l-9-5z" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="12" r="1"/></svg>',
+  color: 'bg-ctp-mauve'
+},
+{
+  name: 'Vue.js',
+  icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 2.69L8.5 8.5H5.17L12 19.31L18.83 8.5H15.5L12 2.69z"/><path d="M12 6.31L9.75 10.5H7.42L12 17.19L16.58 10.5H14.25L12 6.31z" fill="currentColor" opacity="0.6"/></svg>',
+  color: 'bg-ctp-green'
+},
+{
+  name: 'Solidity',
+  icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M10.5 3L7 9h7l3.5-6h-7z" opacity="0.8"/><path d="M13.5 21L17 15h-7l-3.5 6h7z" opacity="0.8"/><path d="M6.5 15L10 9H3l3.5 6h3.5z" opacity="0.6"/><path d="M17.5 9L14 15h7l-3.5-6h-3.5z" opacity="0.6"/></svg>',
+  color: 'bg-ctp-blue'
+}
 ];
 
 const Skills = () => {

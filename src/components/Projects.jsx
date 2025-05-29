@@ -18,10 +18,10 @@ const Projects = () => {
       status: "current"
     },
     {
-      title: "Coming Soon",
-      description: "An exciting project currently under development. Stay tuned for updates!",
-      tags: ["Frontend", "Backend", "Database"],
-      status: "upcoming"
+      title: "HorizonUX",
+      description: "An optimization script made for samsung devices to get a much more better user experience.Your glaxay, Your way.",
+      tags: ["Android", "UX Mod", "Custom OS"],
+      status: "current"
     },
     {
       title: "Future Project",
@@ -137,6 +137,11 @@ const Projects = () => {
     };
   }, []);
 
+  const handlewindow = () => {
+    window.open("https://aary7406.github.io/HorizonUX/", "_blank")
+  }
+
+
   return (
     <section 
       id="projects" 
@@ -212,6 +217,7 @@ const Projects = () => {
                 <div className="mt-6 pt-4 border-t border-ctp-surface1">
                   {project.status === 'current' ? (
                     <a 
+                      onClick={handlewindow}
                       href="#"
                       className="inline-flex items-center text-sm font-medium text-ctp-mauve hover:text-ctp-pink transition-colors"
                     >
@@ -231,7 +237,7 @@ const Projects = () => {
         
         <div className="text-center mt-16">
           <p className="text-ctp-subtext1 mb-6">More projects coming soon!</p>
-          <button className="px-6 py-3 bg-ctp-surface1 text-ctp-text hover:bg-ctp-surface2 transition-colors duration-300 rounded-lg">
+          <button className="px-6 py-3 bg-ctp-surface1 text-ctp-text hover:bg-ctp-surface2 transition-colors duration-300 rounded-full">
             Check Back Later
           </button>
         </div>

@@ -8,7 +8,7 @@ const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   const navItems = [
-    { id: 'home', label: 'Home' },
+    { id: 'hero', label: 'Home' },
     { id: 'about', label: 'About' },
     { id: 'skills', label: 'Skills' },
     { id: 'projects', label: 'Projects' },
@@ -54,7 +54,7 @@ const Navbar = () => {
     <>
       <motion.header 
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          isScrolled ? 'bg-ctp-base/80 backdrop-blur-lg shadow-lg shadow-ctp-crust/20' : 'bg-transparent'
+          isScrolled ? 'bg-transparent backdrop-blur-xl rounded-full m-4 shadow-lg shadow-ctp-crust/20' : 'bg-transparent'
         }`}
         initial={{ y: -100 }}
         animate={{ y: 0 }}
@@ -68,8 +68,8 @@ const Navbar = () => {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3 }}
             >
-              <span className="text-ctp-mauve">A</span>
-              <span className="text-ctp-text">ary</span>
+              <span className="text-ctp-mauve cursor-pointer">A</span>
+              <span className="text-ctp-text cursor-pointer">ary</span>
             </motion.div>
             
             {/* Desktop Navigation */}

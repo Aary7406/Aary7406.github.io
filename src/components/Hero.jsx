@@ -181,7 +181,7 @@ const Hero = () => {
                   });
                 }
               }}
-              className="px-6 py-3 border border-ctp-mauve text-ctp-mauve font-medium rounded-lg hover:bg-ctp-mauve hover:bg-opacity-10 transition-colors duration-300"
+              className="px-6 z-10 hover:z-10 py-3 border border-ctp-mauve text-ctp-mauve font-medium rounded-lg hover:bg-ctp-mauve hover:bg-opacity-100 hover:text-black transition-colors duration-300"
             >
               Get In Touch
             </a>
