@@ -53,14 +53,18 @@ const Navbar = () => {
   return (
     <>
       <motion.header 
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          isScrolled ? 'bg-transparent backdrop-blur-xl rounded-full m-4 shadow-lg shadow-ctp-crust/20' : 'bg-transparent'
+         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ${
+          isMobileMenuOpen
+            ? `bg-white/5 backdrop-blur-xl transition-all duration-700 rounded-full top-4 ${isScrolled ? 'rounded-full m-4 shadow-lg shadow-ctp-crust/50' : 'shadow-lg shadow-ctp-crust/50'}` // Apply 'bg-ctp-base' or your chosen background when mobile menu is open
+            : (isScrolled
+              ? 'bg-black/10 backdrop-blur-xl rounded-full m-4 shadow-lg shadow-ctp-crust/50' // Original scrolled state
+              : 'bg-transparent') // Original default state
         }`}
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <div className="container mx-auto px-6 py-4">
+        <div className="container mx-auto rounded-full px-6 py-4">
           <div className="flex justify-between items-center">
             <motion.div 
               className="text-xl font-display font-bold"
@@ -137,7 +141,7 @@ const Navbar = () => {
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
-            className="fixed inset-0 z-40 bg-ctp-crust/95 backdrop-blur-lg md:hidden pt-20"
+            className="fixed inset-0 z-40 bg-black/40 backdrop-blur-xl md:hidden pt-20"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
@@ -147,7 +151,7 @@ const Navbar = () => {
               {navItems.map((item, index) => (
                 <motion.button
                   key={item.id}
-                  className={`py-3 px-6 text-lg font-medium w-full text-center rounded-lg transition-colors ${
+                  className={`py-3 px-6 text-lg font-medium w-full text-center rounded-[69px] transition-colors ${
                     activeSection === item.id 
                       ? 'bg-ctp-mauve/20 text-ctp-mauve' 
                       : 'text-ctp-subtext0 hover:text-ctp-text'
