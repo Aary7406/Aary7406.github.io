@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import Lenis from 'lenis';
 import Hero from './components/Hero';
 import About from './components/About';
 import Skills from './components/Skills';
@@ -13,6 +14,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 function App() {
   const [loading, setLoading] = useState(true);
+  const lenisRef = useRef(null);
 
   useEffect(() => {
     // Simulate loading time
@@ -20,37 +22,70 @@ function App() {
       setLoading(false);
     }, 2000);
 
-    // Initialize smooth scroll behavior
-    const initSmoothScroll = () => {
-      // Setup GSAP ScrollTrigger for smooth scrolling
-      const sections = document.querySelectorAll('section');
-      
-      sections.forEach((section) => {
-        gsap.fromTo(
-          section,
-          { opacity: 1, y: 50 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 1.2,
-            ease: 'power3.out',
-            scrollTrigger: {
-              trigger: section,
-              start: 'top 80%',
-              end: 'top 30%',
-              toggleActions: 'play none none reverse',
-            },
-          }
-        );
-      });
-    };
-
-    // Initialize animations after the page has loaded
-    if (!loading) {
-      initSmoothScroll();
-    }
-
     return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    // Initialize simple Lenis only after loading is complete
+    if (!loading) {
+      // Mobile-optimized Lenis initialization
+      const isMobile = window.innerWidth < 768;
+      const lenis = new Lenis({
+        duration: isMobile ? 0.8 : 1.2,
+        easing: isMobile 
+          ? (t) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2  // Snappier mobile easing
+          : (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),                 // Smooth desktop easing
+        smooth: true,
+        smoothTouch: isMobile,
+        touchMultiplier: isMobile ? 1.5 : 1,
+        wheelMultiplier: isMobile ? 1 : 1.2,
+        normalizeWheel: !isMobile
+      });
+
+      lenisRef.current = lenis;
+      window.lenis = lenis;
+
+      function raf(time) {
+        lenis.raf(time);
+        requestAnimationFrame(raf);
+      }
+
+      requestAnimationFrame(raf);
+
+      // Initialize smooth scroll behavior
+      const initSmoothScroll = () => {
+        // Setup GSAP ScrollTrigger for smooth scrolling
+        const sections = document.querySelectorAll('section');
+        
+        sections.forEach((section) => {
+          gsap.fromTo(
+            section,
+            { opacity: 1, y: 50 },
+            {
+              opacity: 1,
+              y: 0,
+              duration: 1.2,
+              ease: 'power3.out',
+              scrollTrigger: {
+                trigger: section,
+                start: 'top 80%',
+                end: 'top 30%',
+                toggleActions: 'play none none reverse',
+              },
+            }
+          );
+        });
+      };
+
+      initSmoothScroll();
+
+      return () => {
+        if (lenisRef.current) {
+          lenisRef.current.destroy();
+          delete window.lenis;
+        }
+      };
+    }
   }, [loading]);
 
   if (loading) {

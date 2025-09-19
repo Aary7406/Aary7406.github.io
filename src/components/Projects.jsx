@@ -12,21 +12,21 @@ const Projects = () => {
   // Sample project items - these can be updated with real projects later
   const projects = [
     {
-      title: "Portfolio Website",
-      description: "A responsive personal portfolio built with React, featuring advanced animations and a modern UI design.",
-      tags: ["React", "Tailwind CSS", "GSAP"],
-      status: "current"
-    },
-    {
       title: "HorizonUX",
       description: "An optimization script made for samsung devices to get a much more better user experience.Your glaxay, Your way.",
       tags: ["Android", "UX Mod", "Custom OS"],
-      status: "current"
+      status: "discontinued"
     },
     {
-      title: "Future Project",
-      description: "A planned project that will showcase advanced skills and creative problem-solving.",
-      tags: ["React", "Node.js", "MongoDB"],
+      title: "LightShell",
+      description: "A lightweight and efficient Linux shell like zsh but optimized for performance while being loaded with features.",
+      tags: ["Bash", "Linux", "C/C++", "Rust"],
+      status: "upcoming"
+    },
+    {
+      title: "Lost and Found Portal",
+      description: "A web application to help people find lost items and report found items in their community.",
+      tags: ["Supabase", "ReactJS", "NextJS"],
       status: "upcoming"
     }
   ];
@@ -179,6 +179,8 @@ const Projects = () => {
               className={`project-card bg-ctp-surface0 rounded-xl p-6 border ${
                 project.status === 'current' 
                   ? 'border-ctp-mauve' 
+                  : project.status === 'discontinued'
+                  ? 'border-ctp-overlay0'
                   : 'border-ctp-surface1'
               } shadow-lg transition-all duration-300`}
             >
@@ -187,6 +189,10 @@ const Projects = () => {
                   {project.status === 'current' ? (
                     <span className="inline-block bg-ctp-mauve bg-opacity-20 text-ctp-mauve text-xs px-2 py-1 rounded-full">
                       Active
+                    </span>
+                  ) : project.status === 'discontinued' ? (
+                    <span className="inline-block bg-ctp-overlay0 bg-opacity-20 text-ctp-overlay0 text-xs px-2 py-1 rounded-full">
+                      Discontinued
                     </span>
                   ) : (
                     <span className="inline-block bg-ctp-blue bg-opacity-20 text-ctp-blue text-xs px-2 py-1 rounded-full">
@@ -226,6 +232,8 @@ const Projects = () => {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                       </svg>
                     </a>
+                  ) : project.status === 'discontinued' ? (
+                    <span className="text-sm text-ctp-overlay0">Project Discontinued</span>
                   ) : (
                     <span className="text-sm text-ctp-subtext0">Coming Soon</span>
                   )}

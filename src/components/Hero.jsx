@@ -115,10 +115,23 @@ const Hero = () => {
     e.preventDefault();
     const aboutSection = document.querySelector('#about');
     if (aboutSection) {
-      window.scrollTo({
-        top: aboutSection.offsetTop - 70,
-        behavior: 'smooth',
-      });
+      // Mobile-aware offset
+      const isMobile = window.innerWidth < 768;
+      const offset = isMobile ? -90 : -70;
+      
+      // Check if Lenis is available globally
+      if (window.lenis) {
+        window.lenis.scrollTo(aboutSection, { 
+          offset: offset,
+          duration: isMobile ? 0.8 : 1.2
+        });
+      } else {
+        // Fallback to native scroll
+        window.scrollTo({
+          top: aboutSection.offsetTop + offset,
+          behavior: 'smooth',
+        });
+      }
     }
   };
 
@@ -175,10 +188,23 @@ const Hero = () => {
                 e.preventDefault();
                 const contactSection = document.querySelector('#contact');
                 if (contactSection) {
-                  window.scrollTo({
-                    top: contactSection.offsetTop - 70,
-                    behavior: 'smooth',
-                  });
+                  // Mobile-aware offset
+                  const isMobile = window.innerWidth < 768;
+                  const offset = isMobile ? -90 : -70;
+                  
+                  // Check if Lenis is available globally
+                  if (window.lenis) {
+                    window.lenis.scrollTo(contactSection, { 
+                      offset: offset,
+                      duration: isMobile ? 0.8 : 1.2
+                    });
+                  } else {
+                    // Fallback to native scroll
+                    window.scrollTo({
+                      top: contactSection.offsetTop + offset,
+                      behavior: 'smooth',
+                    });
+                  }
                 }
               }}
               className="px-6 z-10 hover:z-10 py-3 border border-ctp-mauve text-ctp-mauve font-medium rounded-lg hover:bg-ctp-mauve hover:bg-opacity-100 hover:text-black transition-colors duration-300"
