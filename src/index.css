@@ -1,3 +1,161 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@font-face {
+  font-family: 'Kisthe';
+  src: url('/Fonts/Kisthe-BF69030b51234d0.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@import "tailwindcss";
+
+/* Custom theme configuration for Tailwind v4 */
+@theme {
+  /* AMOLED Dark Mode Base */
+  --color-dark-base: #000000;
+  --color-dark-surface: #0a0a0a;
+  --color-dark-elevated: #121212;
+  --color-dark-overlay: #1a1a1a;
+
+  /* White/Gray Scale */
+  --color-light-primary: #ffffff;
+  --color-light-secondary: #e5e5e5;
+  --color-light-tertiary: #a3a3a3;
+  --color-light-muted: #737373;
+
+  /* Pastel RGB Accents */
+  --color-accent-cyan: #7dd3fc;
+  --color-accent-cyan-soft: #a5f3fc;
+  --color-accent-cyan-muted: #67e8f9;
+  --color-accent-magenta: #f0abfc;
+  --color-accent-magenta-soft: #f5d0fe;
+  --color-accent-magenta-muted: #e879f9;
+  --color-accent-lime: #bef264;
+  --color-accent-lime-soft: #d9f99d;
+  --color-accent-lime-muted: #a3e635;
+  --color-accent-red: #fca5a5;
+  --color-accent-red-soft: #fecaca;
+  --color-accent-yellow: #fde047;
+  --color-accent-yellow-soft: #fef08a;
+
+  /* Glassmorphism */
+  --color-glass-white: rgba(255, 255, 255, 0.08);
+  --color-glass-white-hover: rgba(255, 255, 255, 0.12);
+  --color-glass-border: rgba(255, 255, 255, 0.1);
+
+  /* Typography */
+  --font-sans: 'Space Grotesk', 'Inter', sans-serif;
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* Custom font sizes */
+  --text-display-xl: clamp(4rem, 15vw, 12rem);
+  --text-display-lg: clamp(3rem, 10vw, 8rem);
+  --text-display-md: clamp(2rem, 6vw, 5rem);
+}
+
+/* Base styles */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: #000000;
+    color: #ffffff;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+
+  /* Custom selection colors */
+  ::selection {
+    background-color: rgba(125, 211, 252, 0.3);
+    color: #ffffff;
+  }
+
+  /* Smooth scrollbar for webkit browsers */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #000000;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+}
+
+/* Utility classes */
+@layer utilities {
+  .text-gradient {
+    background: linear-gradient(135deg, #7dd3fc 0%, #f0abfc 50%, #bef264 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .glass {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .glass-hover:hover {
+    background: rgba(255, 255, 255, 0.12);
+  }
+
+  .text-display-xl {
+    font-size: clamp(4rem, 15vw, 12rem);
+    line-height: 0.9;
+    letter-spacing: -0.02em;
+  }
+
+  .text-display-lg {
+    font-size: clamp(3rem, 10vw, 8rem);
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+  }
+
+  .text-display-md {
+    font-size: clamp(2rem, 6vw, 5rem);
+    line-height: 1;
+    letter-spacing: -0.01em;
+  }
+}
+
+/* Keyframe animations */
+@keyframes gradientFloat {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  25% {
+    transform: translate(5%, -5%) scale(1.05);
+  }
+  50% {
+    transform: translate(-5%, 5%) scale(0.95);
+  }
+  75% {
+    transform: translate(-3%, -3%) scale(1.02);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}

@@ -7,62 +7,78 @@ export default {
   theme: {
     extend: {
       colors: {
-        'ctp': {
-          // Catppuccin Macchiato palette
-          'rosewater': '#f4dbd6',
-          'flamingo': '#f0c6c6',
-          'pink': '#f5bde6',
-          'mauve': '#c6a0f6',
-          'red': '#ed8796',
-          'maroon': '#ee99a0',
-          'peach': '#f5a97f',
-          'yellow': '#eed49f',
-          'green': '#a6da95',
-          'teal': '#8bd5ca',
-          'sky': '#91d7e3',
-          'sapphire': '#7dc4e4',
-          'blue': '#8aadf4',
-          'lavender': '#b7bdf8',
-          'text': '#cad3f5',
-          'subtext1': '#b8c0e0',
-          'subtext0': '#a5adcb',
-          'overlay2': '#939ab7',
-          'overlay1': '#8087a2',
-          'overlay0': '#6e738d',
-          'surface2': '#5b6078',
-          'surface1': '#494d64',
-          'surface0': '#363a4f',
-          'base': '#24273a',
-          'mantle': '#1e2030',
-          'crust': '#181926',
+        // AMOLED Dark Mode Base
+        'dark': {
+          'base': '#000000',
+          'surface': '#0a0a0a',
+          'elevated': '#121212',
+          'overlay': '#1a1a1a',
+        },
+        // White/Gray Scale
+        'light': {
+          'primary': '#ffffff',
+          'secondary': '#e5e5e5',
+          'tertiary': '#a3a3a3',
+          'muted': '#737373',
+        },
+        // Pastel RGB Accents (MD3 Expressive inspired)
+        'accent': {
+          // Pastel Cyan/Blue
+          'cyan': '#7dd3fc',
+          'cyan-soft': '#a5f3fc',
+          'cyan-muted': '#67e8f9',
+          // Pastel Magenta/Pink
+          'magenta': '#f0abfc',
+          'magenta-soft': '#f5d0fe',
+          'magenta-muted': '#e879f9',
+          // Pastel Lime/Green
+          'lime': '#bef264',
+          'lime-soft': '#d9f99d',
+          'lime-muted': '#a3e635',
+          // Pastel Red
+          'red': '#fca5a5',
+          'red-soft': '#fecaca',
+          // Pastel Yellow
+          'yellow': '#fde047',
+          'yellow-soft': '#fef08a',
+        },
+        // Glassmorphism
+        'glass': {
+          'white': 'rgba(255, 255, 255, 0.08)',
+          'white-hover': 'rgba(255, 255, 255, 0.12)',
+          'border': 'rgba(255, 255, 255, 0.1)',
         },
       },
       fontFamily: {
-        'sans': ['Inter', 'sans-serif'],
+        'sans': ['Space Grotesk', 'Inter', 'sans-serif'],
+        'display': ['Space Grotesk', 'sans-serif'],
         'mono': ['JetBrains Mono', 'monospace'],
-        'display': ['Clash Display', 'sans-serif'],
+      },
+      fontSize: {
+        // Huge typography scale
+        'display-xl': ['clamp(4rem, 15vw, 12rem)', { lineHeight: '0.9', letterSpacing: '-0.02em' }],
+        'display-lg': ['clamp(3rem, 10vw, 8rem)', { lineHeight: '0.95', letterSpacing: '-0.02em' }],
+        'display-md': ['clamp(2rem, 6vw, 5rem)', { lineHeight: '1', letterSpacing: '-0.01em' }],
       },
       animation: {
         'float': 'float 6s ease-in-out infinite',
         'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-        'spin-slow': 'spin 8s linear infinite',
-        'wave': 'wave 2.5s ease-in-out infinite',
+        'glow': 'glow 2s ease-in-out infinite alternate',
       },
       keyframes: {
         float: {
           '0%, 100%': { transform: 'translateY(0)' },
           '50%': { transform: 'translateY(-20px)' },
         },
-        wave: {
-          '0%': { transform: 'rotate(0deg)' },
-          '10%': { transform: 'rotate(14deg)' },
-          '20%': { transform: 'rotate(-8deg)' },
-          '30%': { transform: 'rotate(14deg)' },
-          '40%': { transform: 'rotate(-4deg)' },
-          '50%': { transform: 'rotate(10deg)' },
-          '60%': { transform: 'rotate(0deg)' },
-          '100%': { transform: 'rotate(0deg)' },
+        glow: {
+          '0%': { opacity: '0.5' },
+          '100%': { opacity: '1' },
         },
+      },
+      backdropBlur: {
+        'xs': '2px',
+        '2xl': '40px',
+        '3xl': '64px',
       },
     },
   },

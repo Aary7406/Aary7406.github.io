@@ -93,7 +93,7 @@ function App() {
   }
 
   return (
-    <div className="bg-ctp-base text-ctp-text min-h-screen">
+    <div className="bg-dark-base text-light-primary min-h-screen">
       <Navbar />
       <main>
         <Hero />
@@ -102,8 +102,8 @@ function App() {
         <Projects />
         <Contact />
       </main>
-      <footer className="py-6 text-center text-ctp-subtext0">
-        <p>© {new Date().getFullYear()} Aary Hinge. All rights reserved.</p>
+      <footer className="py-8 text-center text-light-muted bg-dark-base border-t border-glass-border">
+        <p className="text-sm">© {new Date().getFullYear()} Aary Hinge. Crafted with passion.</p>
       </footer>
     </div>
   );
