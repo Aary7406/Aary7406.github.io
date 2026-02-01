@@ -5,12 +5,12 @@
   "type": "module",
   "homepage": "https://aary7406.github.io",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "lint": "eslint .",
-    "preview": "vite preview",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d docs"
+    "dev": "bunx --bun vite",
+    "build": "bunx --bun vite build",
+    "lint": "bunx eslint .",
+    "preview": "bunx --bun vite preview",
+    "predeploy": "bun run build",
+    "deploy": "bunx gh-pages -d docs"
   },
   "dependencies": {
     "framer-motion": "^12.9.4",
