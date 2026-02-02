@@ -69,11 +69,11 @@ const Hero = () => {
           {/* Subtitle */}
           <p 
             ref={subtitleRef}
-            className="text-xl md:text-2xl lg:text-3xl text-light-tertiary font-light max-w-2xl mx-auto"
+            className="text-2xl md:text-3xl lg:text-4xl text-light-secondary max-w-2xl mx-auto"
+            style={{ fontFamily: 'Caveat, cursive' }}
           >
-            Crafting digital experiences with{' '}
-            <span className="text-accent-magenta">code</span> &{' '}
-            <span className="text-accent-lime">creativity</span>
+            hey there! i turn <span className="text-accent-cyan">ideas</span> into{' '}
+            <span className="text-accent-magenta">reality</span> — one line at a time ✨
           </p>
         </div>
       </div>

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Caveat:wght@400;500;600;700&display=swap');
 
 @font-face {
   font-family: 'Kisthe';
@@ -11,7 +11,7 @@
 @import "tailwindcss";
 
 /* Custom theme configuration for Tailwind v4 */
-@theme {
+@theme{
   /* AMOLED Dark Mode Base */
   --color-dark-base: #000000;
   --color-dark-surface: #0a0a0a;
@@ -48,6 +48,7 @@
   --font-sans: 'Space Grotesk', 'Inter', sans-serif;
   --font-display: 'Space Grotesk', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
+  --font-handwritten: 'Caveat', cursive;
 
   /* Custom font sizes */
   --text-display-xl: clamp(4rem, 15vw, 12rem);
@@ -158,4 +159,19 @@
     opacity: 1;
     transform: translateX(-50%) translateY(0);
   }
+}
+
+/* Slow spin for PFP ring - 120fps optimized */
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 8s linear infinite;
+  will-change: transform;
 }
