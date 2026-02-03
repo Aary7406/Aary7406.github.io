@@ -7,6 +7,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 const Hero = () => {
   const heroRef = useRef(null);
+  const heroContentRef = useRef(null);
   const subtitleRef = useRef(null);
 
   useEffect(() => {
@@ -20,16 +21,17 @@ const Hero = () => {
       '+=0.3'
     );
 
-    // Parallax scroll effect
-    gsap.to(heroRef.current, {
+    // Scale down effect as user scrolls - hero stays sticky, content scales
+    gsap.to(heroContentRef.current, {
       scrollTrigger: {
         trigger: heroRef.current,
         start: 'top top',
         end: 'bottom top',
-        scrub: true,
+        scrub: 0.5,
       },
-      y: 150,
-      opacity: 0.3,
+      scale: 0.75,
+      opacity: 0,
+      ease: 'none',
     });
 
     return () => {
@@ -42,7 +44,7 @@ const Hero = () => {
     <section
       id="hero"
       ref={heroRef}
-      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-black"
+      className="sticky top-0 h-screen flex items-center justify-center overflow-hidden bg-black z-0"
     >
       {/* Background Image with Dark Overlay and Blur */}
       <div className="absolute inset-0">
@@ -59,7 +61,7 @@ const Hero = () => {
       </div>
 
       {/* Content Container */}
-      <div className="relative z-10 container mx-auto px-6 md:px-8">
+      <div ref={heroContentRef} className="relative z-10 container mx-auto px-6 md:px-8 will-change-transform">
         <div className="max-w-6xl mx-auto text-center">
           {/* Main Name - Pixel Distortion Shader Text */}
           <div className="mb-6">

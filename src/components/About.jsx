@@ -1,5 +1,5 @@
 import { useEffect, useRef, memo, useState, useCallback } from 'react';
-import { motion, useTransform, useScroll, useInView } from 'framer-motion';
+import { motion, useScroll, useTransform, useInView } from 'framer-motion';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -101,45 +101,95 @@ const InfiniteSlider = memo(({ items, speed = 25 }) => {
     };
   }, [isDragging, handleDragMove, handleDragEnd]);
 
+  // Generate slider content JSX for reuse
+  const sliderContent = (
+    <div
+      ref={sliderRef}
+      className="flex gap-4 md:gap-5 will-change-transform py-2"
+      style={{
+        animation: `scroll ${speed}s linear infinite`,
+        animationPlayState: isPaused ? 'paused' : 'running',
+      }}
+    >
+      {duplicatedItems.map((item, index) => (
+        <div
+          key={`${item.name}-${index}`}
+          className="flex-shrink-0 group"
+        >
+          <div className="relative">
+            {/* Glow on hover */}
+            <div className="absolute -inset-0.5 bg-gradient-to-r from-accent-cyan via-accent-magenta to-accent-lime rounded-full opacity-0 group-hover:opacity-20 blur-md transition-opacity duration-300" />
+            
+            {/* Pill-shaped chip - glass effect blending with bg */}
+            <div className="relative bg-white/5 backdrop-blur-md border border-white/10 rounded-full px-5 py-2.5 flex items-center gap-3 transition-all duration-300 group-hover:border-white/20 group-hover:bg-white/10">
+              <span className="text-accent-cyan/80 text-lg">{item.icon}</span>
+              <span className="text-light-tertiary font-medium text-sm whitespace-nowrap group-hover:text-light-secondary">{item.name}</span>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+
   return (
     <div 
       ref={containerRef}
-      className="relative w-full overflow-hidden cursor-grab active:cursor-grabbing select-none"
+      className="relative w-full overflow-hidden cursor-grab active:cursor-grabbing select-none rounded-full"
       onMouseEnter={() => !isDragging && setIsPaused(true)}
       onMouseLeave={() => !isDragging && setIsPaused(false)}
       onMouseDown={handleDragStart}
       onTouchStart={handleDragStart}
     >
-      {/* Gradient masks for fade effect */}
-      <div className="absolute left-0 top-0 bottom-0 w-16 md:w-24 bg-gradient-to-r from-dark-base to-transparent z-10 pointer-events-none" />
-      <div className="absolute right-0 top-0 bottom-0 w-16 md:w-24 bg-gradient-to-l from-dark-base to-transparent z-10 pointer-events-none" />
+      {/* Sharp base layer - the actual content */}
+      {sliderContent}
       
-      <div
-        ref={sliderRef}
-        className="flex gap-4 md:gap-5 will-change-transform py-2"
+      {/* Progressive Vector Blur Mask Layer */}
+      {/* Uses backdrop-filter with gradient mask for mathematically smooth blur transition */}
+      {/* Mask gradient: solid at edges (blur visible) → transparent center (sharp visible) */}
+      {/* The mask uses eased gradients for smoother perceptual falloff */}
+      <div 
+        className="absolute inset-0 pointer-events-none z-10"
         style={{
-          animation: `scroll ${speed}s linear infinite`,
-          animationPlayState: isPaused ? 'paused' : 'running',
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
+          /* 
+           * Progressive mask using multiple color stops for smooth easing:
+           * Left edge:  0-40px solid blur, 40-150px fade to transparent
+           * Right edge: calc(100%-150px) to calc(100%-40px) fade, calc(100%-40px) to 100% solid blur
+           * Uses cubic-bezier-like stop distribution for perceptual smoothness
+           */
+          WebkitMaskImage: `linear-gradient(
+            90deg,
+            rgba(0,0,0,1) 0px,
+            rgba(0,0,0,1) 30px,
+            rgba(0,0,0,0.8) 50px,
+            rgba(0,0,0,0.5) 80px,
+            rgba(0,0,0,0.2) 120px,
+            rgba(0,0,0,0) 160px,
+            rgba(0,0,0,0) calc(100% - 160px),
+            rgba(0,0,0,0.2) calc(100% - 120px),
+            rgba(0,0,0,0.5) calc(100% - 80px),
+            rgba(0,0,0,0.8) calc(100% - 50px),
+            rgba(0,0,0,1) calc(100% - 30px),
+            rgba(0,0,0,1) 100%
+          )`,
+          maskImage: `linear-gradient(
+            90deg,
+            rgba(0,0,0,1) 0px,
+            rgba(0,0,0,1) 30px,
+            rgba(0,0,0,0.8) 50px,
+            rgba(0,0,0,0.5) 80px,
+            rgba(0,0,0,0.2) 120px,
+            rgba(0,0,0,0) 160px,
+            rgba(0,0,0,0) calc(100% - 160px),
+            rgba(0,0,0,0.2) calc(100% - 120px),
+            rgba(0,0,0,0.5) calc(100% - 80px),
+            rgba(0,0,0,0.8) calc(100% - 50px),
+            rgba(0,0,0,1) calc(100% - 30px),
+            rgba(0,0,0,1) 100%
+          )`,
         }}
-      >
-        {duplicatedItems.map((item, index) => (
-          <div
-            key={`${item.name}-${index}`}
-            className="flex-shrink-0 group"
-          >
-            <div className="relative">
-              {/* Glow on hover */}
-              <div className="absolute -inset-0.5 bg-gradient-to-r from-accent-cyan via-accent-magenta to-accent-lime rounded-full opacity-0 group-hover:opacity-25 blur-md transition-opacity duration-300" />
-              
-              {/* Pill-shaped chip */}
-              <div className="relative bg-dark-elevated/90 backdrop-blur-sm border border-glass-border rounded-full px-5 py-2.5 flex items-center gap-3 transition-all duration-300 group-hover:border-accent-cyan/40 group-hover:bg-dark-overlay/90">
-                <span className="text-accent-cyan text-lg">{item.icon}</span>
-                <span className="text-light-secondary font-medium text-sm whitespace-nowrap">{item.name}</span>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+      />
       
       {/* CSS Animation */}
       <style>{`
@@ -192,25 +242,28 @@ const StaggeredText = memo(({ text, delay = 0 }) => {
 StaggeredText.displayName = 'StaggeredText';
 
 // ============================================================================
-// FLOATING PARAGRAPH (Simplified)
+// FLOATING PARAGRAPH (Scroll-based reversible)
 // ============================================================================
-const FloatingParagraph = memo(({ children, delay = 0 }) => {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: '-30px' });
+const FloatingParagraph = memo(({ children, delay = 0, scrollProgress }) => {
+  // Stagger based on delay prop
+  const start = 0.1 + delay;
+  const end = 0.35 + delay;
+  
+  const opacity = useTransform(scrollProgress, [start, end], [0, 1]);
+  const y = useTransform(scrollProgress, [start, end], [30, 0]);
+  const blur = useTransform(scrollProgress, [start, end], [6, 0]);
 
   return (
-    <p
-      ref={ref}
-      className="text-light-tertiary text-base md:text-lg leading-relaxed will-change-transform"
+    <motion.p
       style={{
-        opacity: isInView ? 1 : 0,
-        transform: isInView ? 'translateY(0)' : 'translateY(20px)',
-        filter: isInView ? 'blur(0)' : 'blur(4px)',
-        transition: `all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) ${delay}s`,
+        opacity,
+        y,
+        filter: useTransform(blur, (v) => `blur(${v}px)`),
       }}
+      className="text-light-tertiary text-base md:text-lg leading-relaxed will-change-[transform,opacity,filter]"
     >
       {children}
-    </p>
+    </motion.p>
   );
 });
 
@@ -235,15 +288,13 @@ const About = () => {
   const sectionRef = useRef(null);
   const headingRef = useRef(null);
   const pfpRef = useRef(null);
-  
-  // Scroll-based parallax (lightweight)
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ['start end', 'end start'],
+  const bioRef = useRef(null);
+
+  // Scroll progress for bio section - reversible stagger effects
+  const { scrollYProgress: bioScrollProgress } = useScroll({
+    target: bioRef,
+    offset: ['start 0.9', 'start 0.3'],
   });
-  
-  const blur1Y = useTransform(scrollYProgress, [0, 1], ['-5%', '15%']);
-  const blur2Y = useTransform(scrollYProgress, [0, 1], ['5%', '-10%']);
 
   // Magnetic PFP effect with RAF for 120fps
   useEffect(() => {
@@ -321,20 +372,8 @@ const About = () => {
     <section
       id="about"
       ref={sectionRef}
-      className="relative min-h-screen py-24 md:py-32 overflow-hidden bg-dark-base"
+      className="relative min-h-screen py-24 md:py-32 overflow-hidden"
     >
-      {/* BACKGROUND - Reduced blur for performance */}
-      <div className="absolute inset-0 pointer-events-none">
-        <motion.div
-          className="absolute w-[500px] h-[500px] rounded-full bg-accent-cyan/6 blur-[80px]"
-          style={{ y: blur1Y, left: '-10%', top: '15%' }}
-        />
-        <motion.div
-          className="absolute w-[400px] h-[400px] rounded-full bg-accent-magenta/5 blur-[60px]"
-          style={{ y: blur2Y, right: '-5%', top: '45%' }}
-        />
-      </div>
-
       <div className="relative z-10 container mx-auto px-6 md:px-8">
         
         {/* HEADING */}
@@ -401,18 +440,18 @@ const About = () => {
           </div>
 
           {/* RIGHT: Bio */}
-          <div className="space-y-5">
-            <FloatingParagraph delay={0.1}>
+          <div ref={bioRef} className="space-y-5">
+            <FloatingParagraph delay={0} scrollProgress={bioScrollProgress}>
               I'm a <span className="text-accent-cyan font-medium">Computer Science student</span> with a passion 
               for understanding systems — from web applications down to kernel-level optimizations.
             </FloatingParagraph>
 
-            <FloatingParagraph delay={0.2}>
+            <FloatingParagraph delay={0.1} scrollProgress={bioScrollProgress}>
               My work spans <span className="text-accent-magenta font-medium">full-stack development</span> and 
               <span className="text-accent-lime font-medium"> low-level C++</span> where performance is measured in microseconds.
             </FloatingParagraph>
 
-            <FloatingParagraph delay={0.3}>
+            <FloatingParagraph delay={0.2} scrollProgress={bioScrollProgress}>
               I'm fascinated by <span className="text-accent-cyan font-medium">OS internals</span>, kernel tuning, 
               and DevOps practices that bridge development and infrastructure.
             </FloatingParagraph>

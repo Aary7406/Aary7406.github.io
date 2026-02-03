@@ -4,7 +4,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
 import Hero from './components/Hero';
 import About from './components/About';
-import Skills from './components/Skills';
+import Skills from './components/skills';
 import Projects from './components/Projects';
 import Contact from './components/Contact';
 import Navbar from './components/Navbar';
@@ -96,13 +96,34 @@ function App() {
     <div className="bg-dark-base text-light-primary min-h-screen">
       <Navbar />
       <main>
+        {/* Hero is sticky and stays behind */}
         <Hero />
-        <About />
-        <Skills />
-        <Projects />
-        <Contact />
+        {/* Spacer to account for sticky hero height */}
+        <div className="h-screen" aria-hidden="true" />
+        {/* Content that scrolls over hero with shared background */}
+        <div className="relative z-10">
+          {/* Shared background for About + Skills - single layer, no borders */}
+          <div 
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              backgroundImage: 'url(/Skills.png)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat',
+              backgroundAttachment: 'fixed',
+              filter: 'blur(10px)',
+            }}
+          />
+          {/* Single dark overlay for entire content area */}
+          <div className="absolute inset-0 bg-dark-base/70 pointer-events-none" />
+          
+          <About />
+          <Skills />
+          <Projects />
+          <Contact />
+        </div>
       </main>
-      <footer className="py-8 text-center text-light-muted bg-dark-base border-t border-glass-border">
+      <footer className="relative z-10 py-8 text-center text-light-muted bg-dark-base border-t border-glass-border">
         <p className="text-sm">© {new Date().getFullYear()} Aary Hinge. Crafted with passion.</p>
       </footer>
     </div>
