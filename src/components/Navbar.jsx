@@ -2,11 +2,45 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+// Rolling text effect component with staggered letters
+const RollingText = ({ children, className = '' }) => {
+  const text = String(children);
+  
+  return (
+    <motion.span 
+      className={`relative flex overflow-hidden ${className}`}
+      initial="initial"
+      whileHover="hover"
+    >
+      {text.split('').map((char, i) => (
+        <motion.span
+          key={i}
+          className="relative block"
+          variants={{
+            initial: { y: 0 },
+            hover: { y: '-100%' },
+          }}
+          transition={{
+            duration: 0.3,
+            ease: [0.33, 1, 0.68, 1],
+            delay: i * 0.03,
+          }}
+        >
+          {char === ' ' ? '\u00A0' : char}
+          <span className="absolute left-0 top-full">
+            {char === ' ' ? '\u00A0' : char}
+          </span>
+        </motion.span>
+      ))}
+    </motion.span>
+  );
+};
+
 const Navbar = () => {
   const [isHovered, setIsHovered] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  
+
   const navItems = [
     { id: 'hero', label: 'Home' },
     { id: 'about', label: 'About' },
@@ -16,62 +50,32 @@ const Navbar = () => {
   ];
 
   useEffect(() => {
-    let ticking = false;
-    
     const handleScroll = () => {
-      if (!ticking) {
-        requestAnimationFrame(() => {
-          const sections = navItems.map(item => item.id);
-          const currentSection = sections.find(section => {
-            const element = document.getElementById(section);
-            if (element) {
-              const rect = element.getBoundingClientRect();
-              const offset = 150;
-              return rect.top <= offset && rect.bottom >= offset;
-            }
-            return false;
-          });
-          
-          if (currentSection) {
-            setActiveSection(currentSection);
-          }
-          
-          ticking = false;
-        });
-        ticking = true;
+      for (let i = navItems.length - 1; i >= 0; i--) {
+        const el = document.getElementById(navItems[i].id);
+        if (el && el.getBoundingClientRect().top <= 100) {
+          setActiveSection(navItems[i].id);
+          return;
+        }
       }
+      setActiveSection('hero');
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const scrollToSection = (sectionId) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      // Scroll exactly to the section top
-      const targetPosition = element.getBoundingClientRect().top + window.scrollY;
-      
-      if (window.lenis) {
-        window.lenis.scrollTo(targetPosition, { duration: 1.2 });
-      } else {
-        window.scrollTo({
-          top: targetPosition,
-          behavior: 'smooth'
-        });
-      }
+    if (sectionId === 'hero') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
     }
     setIsMobileMenuOpen(false);
   };
 
-  // Glassmorphism style object
-  const glassStyle = {
-    background: 'rgba(255, 255, 255, 0.1)',
-    backdropFilter: 'blur(24px)',
-    WebkitBackdropFilter: 'blur(24px)',
-    border: '1px solid rgba(255, 255, 255, 0.1)',
-    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',    willChange: 'backdrop-filter',
-    isolation: 'isolate',  };
+  // Tailwind glass classes
+  const glassClasses = 'backdrop-blur-xl border border-white/10 shadow-lg';
 
   // Framer Motion variants - consistent tween for seamless feel
   const navItemVariants = {
@@ -105,7 +109,7 @@ const Navbar = () => {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
       >
-        <div className="px-5 py-3 rounded-full" style={glassStyle}>
+        <div className={`px-5 py-3 rounded-full ${glassClasses}`}>
           <span className="text-light-primary font-display font-bold text-lg">
             Aary<span className="text-accent-cyan">.</span>
           </span>
@@ -114,23 +118,20 @@ const Navbar = () => {
 
       {/* Desktop Navbar - Two Separate Pills */}
       <header 
-        className="hidden md:block fixed top-6 left-1/2 z-50 animate-[slideDown_0.6s_ease-out_forwards]"
-        style={{ transform: 'translateX(-50%)' }}
+        className="hidden md:block fixed top-6 left-1/2 -translate-x-1/2 z-50"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
         <div className="relative flex items-center">
           {/* Name Pill */}
           <motion.div 
-            className="px-6 py-3 rounded-full relative cursor-pointer"
-            style={glassStyle}
+            className={`px-6 py-3 rounded-full relative cursor-pointer ${glassClasses}`}
             animate={{ x: isHovered ? -100 : 0 }}
             transition={{ duration: 0.3, ease: [0.33, 1, 0.68, 1] }}
           >
             {/* Glass highlight */}
             <div 
-              className="absolute inset-0 rounded-full pointer-events-none"
-              style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%)' }}
+              className="absolute inset-0 rounded-full pointer-events-none bg-gradient-to-br from-white/10 to-transparent"
             />
             <span className="text-light-primary font-display font-bold text-lg whitespace-nowrap relative z-10">
               Aary<span className="text-accent-cyan">.</span>
@@ -141,10 +142,9 @@ const Navbar = () => {
           <AnimatePresence>
             {isHovered && (
               <motion.nav
-                className="absolute left-0 ml-3 px-2 py-2 rounded-full flex items-center"
-                style={{ ...glassStyle, transformOrigin: 'left center' }}
-                initial={{ opacity: 0, scaleX: 0.8, x: 0 }}
-                animate={{ opacity: 1, scaleX: 1, x: 0 }}
+                className={`absolute left-0 ml-3 px-2 py-2 rounded-full flex items-center origin-left ${glassClasses}`}
+                initial={{ opacity: 0, scaleX: 0.8 }}
+                animate={{ opacity: 1, scaleX: 1 }}
                 exit={{ opacity: 0, scaleX: 0.9 }}
                 transition={{ 
                   duration: 0.35, 
@@ -153,8 +153,7 @@ const Navbar = () => {
               >
               {/* Glass highlight */}
               <div 
-                className="absolute inset-0 rounded-full pointer-events-none"
-                style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.08) 0%, transparent 50%)' }}
+                className="absolute inset-0 rounded-full pointer-events-none bg-gradient-to-br from-white/5 to-transparent"
               />
               
               <div className="flex items-center gap-1 relative z-10">
@@ -167,8 +166,8 @@ const Navbar = () => {
                     animate="visible"
                     exit="exit"
                     className={`px-4 py-2 text-sm font-medium rounded-full whitespace-nowrap 
-                      transition-all duration-300 ease-[cubic-bezier(0.33,1,0.68,1)]
-                      hover:scale-[1.03] active:scale-[0.97]
+                      transition-colors duration-300
+                      active:scale-[0.97]
                       ${
                         activeSection === item.id 
                           ? 'text-dark-base bg-light-primary' 
@@ -179,7 +178,7 @@ const Navbar = () => {
                       scrollToSection(item.id);
                     }}
                   >
-                    {item.label}
+                    <RollingText>{item.label}</RollingText>
                   </motion.button>
                 ))}
               </div>
@@ -191,8 +190,7 @@ const Navbar = () => {
 
       {/* Mobile Menu Button */}
       <motion.button
-        className="md:hidden fixed top-6 right-6 z-50 p-3 rounded-full"
-        style={glassStyle}
+        className={`md:hidden fixed top-6 right-6 z-50 p-3 rounded-full ${glassClasses}`}
         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
