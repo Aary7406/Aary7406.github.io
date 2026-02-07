@@ -5,6 +5,7 @@ import Lenis from 'lenis';
 import Hero from './components/Hero';
 import About from './components/About';
 import Skills from './components/skills';
+import Services from './components/Services';
 import Projects from './components/Projects';
 import Contact from './components/Contact';
 import Navbar from './components/Navbar';
@@ -119,6 +120,7 @@ function App() {
           
           <About />
           <Skills />
+          <Services/>
           <Projects />
           <Contact />
         </div>

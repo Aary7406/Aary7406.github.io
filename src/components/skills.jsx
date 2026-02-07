@@ -230,7 +230,7 @@ const SkillCategory = ({ category, index }) => {
   return (
     <section
       ref={sectionRef}
-      className="min-h-[70vh] flex flex-col justify-center py-16 md:py-20 relative"
+      className="min-h-[70vh] overflow-hidden flex flex-col justify-center py-16 md:py-20 relative"
     >
       <div className="container mx-auto px-6 relative z-10">
         {/* Huge typography title - top */}
