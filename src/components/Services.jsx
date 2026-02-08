@@ -155,7 +155,7 @@ const services = [
 ];
 
 // Pastel blue color
-const PASTEL_BLUE = '#A8D8EA';
+const PASTEL_BLUE = '#a8afeaff';
 
 const Services = () => {
     const sectionRef = useRef(null);
@@ -278,10 +278,10 @@ const Services = () => {
                             className="rounded-full overflow-hidden"
                             style={{
                                 backgroundColor: PASTEL_BLUE,
-                                width: '160px',
-                                padding: '12px 0',
-                                border: '2px solid rgba(255,255,255,0.4)',
-                                boxShadow: '0 8px 32px rgba(168, 216, 234, 0.4), 0 4px 16px rgba(0,0,0,0.2)',
+                                width: '150px',
+                                padding: '5px 0',
+                                // border: '2px solid rgba(255,255,255,0.4)',
+                                // boxShadow: '0 8px 32px rgba(168, 216, 234, 0.4), 0 4px 16px rgba(0,0,0,0.2)',
                             }}
                         >
                             <CursorMarquee text="Contact Now →" />

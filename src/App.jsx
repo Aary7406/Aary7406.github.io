@@ -6,7 +6,7 @@ import Hero from './components/Hero';
 import About from './components/About';
 import Skills from './components/skills';
 import Services from './components/Services';
-import Projects from './components/Projects';
+import ProjectsSection from './components/ProjectsSection';
 import Contact from './components/Contact';
 import Navbar from './components/Navbar';
 import Loader from './components/Loader';
@@ -33,7 +33,7 @@ function App() {
       const isMobile = window.innerWidth < 768;
       const lenis = new Lenis({
         duration: isMobile ? 0.8 : 1.2,
-        easing: isMobile 
+        easing: isMobile
           ? (t) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2  // Snappier mobile easing
           : (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),                 // Smooth desktop easing
         smooth: true,
@@ -57,7 +57,7 @@ function App() {
       const initSmoothScroll = () => {
         // Setup GSAP ScrollTrigger for smooth scrolling
         const sections = document.querySelectorAll('section');
-        
+
         sections.forEach((section) => {
           gsap.fromTo(
             section,
@@ -97,14 +97,15 @@ function App() {
     <div className="bg-dark-base text-light-primary min-h-screen">
       <Navbar />
       <main>
-        {/* Hero is sticky and stays behind */}
+        {/* Hero is sticky and stays behind at z-0 */}
         <Hero />
         {/* Spacer to account for sticky hero height */}
         <div className="h-screen" aria-hidden="true" />
+
         {/* Content that scrolls over hero with shared background */}
         <div className="relative z-10">
           {/* Shared background for About + Skills - single layer, no borders */}
-          <div 
+          <div
             className="absolute inset-0 pointer-events-none"
             style={{
               backgroundImage: 'url(/Skills.png)',
@@ -117,12 +118,28 @@ function App() {
           />
           {/* Single dark overlay for entire content area */}
           <div className="absolute inset-0 bg-dark-base/70 pointer-events-none" />
-          
+
           <About />
           <Skills />
-          <Services/>
-          <Projects />
-          <Contact />
+          <Services />
+        </div>
+
+        {/* Pastel red background layer - above Hero (z-5) but below Projects content */}
+        <div
+          className="relative z-5"
+          style={{
+            backgroundColor: '#d64545', /* True red - matches SVG curve */
+          }}
+        >
+          {/* Projects section with its own background - z-10 to be above the red bg */}
+          <div className="relative z-10">
+            <ProjectsSection />
+          </div>
+
+          {/* Contact section */}
+          <div className="relative z-10">
+            <Contact />
+          </div>
         </div>
       </main>
       <footer className="relative z-10 py-8 text-center text-light-muted bg-dark-base border-t border-glass-border">
