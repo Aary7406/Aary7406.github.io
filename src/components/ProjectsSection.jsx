@@ -74,7 +74,7 @@ const Section1 = ({ scrollYProgress }) => {
                 {/* Content */}
                 <div className="absolute bottom-8 left-8 z-20" style={{ maxWidth: '400px' }}>
                     <motion.div style={{ y: titleShiftY }}>
-                        <h2 className="text-3xl md:text-4xl font-bold text-ctp-text" style={{ fontFamily: 'Space Grotesk' }}>
+                        <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-ctp-text" style={{ fontFamily: 'Space Grotesk' }}>
                             {title.split('').map((char, i) => (
                                 <span key={i} className="inline-block overflow-hidden">
                                     <motion.span className="inline-block"
@@ -86,7 +86,7 @@ const Section1 = ({ scrollYProgress }) => {
                         </h2>
                     </motion.div>
                     <div className="overflow-hidden mt-4">
-                        <motion.p className="text-sm md:text-base text-ctp-subtext0" style={{ y: descY, opacity: descOpacity, fontFamily: 'Inter' }}>
+                        <motion.p className="text-base md:text-lg text-ctp-subtext0" style={{ y: descY, opacity: descOpacity, fontFamily: 'Inter' }}>
                             A comprehensive web application for managing lost and found items in educational institutions, corporates, and government offices.
                         </motion.p>
                     </div>
@@ -160,7 +160,7 @@ const Section2 = ({ scrollYProgress }) => {
                 {/* Content */}
                 <div className="absolute bottom-8 left-8 z-20" style={{ maxWidth: '400px' }}>
                     <motion.div style={{ y: titleShiftY }}>
-                        <h2 className="text-3xl md:text-4xl font-bold text-white" style={{ fontFamily: 'Space Grotesk' }}>
+                        <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white" style={{ fontFamily: 'JetBrains Mono' }}>
                             {title.split('').map((char, i) => (
                                 <span key={i} className="inline-block overflow-hidden">
                                     <motion.span className="inline-block"
@@ -172,17 +172,47 @@ const Section2 = ({ scrollYProgress }) => {
                         </h2>
                     </motion.div>
                     <div className="overflow-hidden mt-4">
-                        <motion.p className="text-sm md:text-base text-gray-300" style={{ y: descY, opacity: descOpacity, fontFamily: 'Inter' }}>
+                        <motion.p className="text-base md:text-lg text-gray-300" style={{ y: descY, opacity: descOpacity, fontFamily: 'Inter' }}>
                             A non-POSIX shell built in C++ for Linux, focused on efficiency and modern features.
                         </motion.p>
                     </div>
                 </div>
 
-                {/* Image placeholder */}
-                <motion.div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[50%] max-w-xl z-10"
-                    style={{ x: imageX, scale: imageScale, opacity: imageOpacity }}>
-                    <div className="w-full aspect-video rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shadow-2xl">
-                        <span className="text-white/30 text-sm">Coming Soon</span>
+                {/* CSS Terminal Window Placeholder */}
+                <motion.div
+                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60%] max-w-2xl z-20"
+                    style={{ x: imageX, scale: imageScale, opacity: imageOpacity }}
+                >
+                    <div className="w-full rounded-lg overflow-hidden border border-white/10 bg-[#0f0f12] shadow-2xl">
+                        {/* Terminal Header */}
+                        <div className="bg-[#1a1b26] px-4 py-2 flex items-center gap-2 border-b border-white/5">
+                            <div className="flex gap-2">
+                                <div className="w-3 h-3 rounded-full bg-red-500/80"></div>
+                                <div className="w-3 h-3 rounded-full bg-yellow-500/80"></div>
+                                <div className="w-3 h-3 rounded-full bg-green-500/80"></div>
+                            </div>
+                            <div className="flex-1 text-center text-xs text-white/30 font-mono">user@lightshell:~</div>
+                        </div>
+                        {/* Terminal Body */}
+                        <div className="p-6 font-mono text-sm leading-relaxed text-gray-300">
+                            <div className="flex gap-2">
+                                <span className="text-green-400">➜</span>
+                                <span className="text-blue-400">~</span>
+                                <span className="text-gray-400">$</span>
+                                <span className="text-white">./lightshell</span>
+                            </div>
+                            <div className="mt-2 text-white/50">
+                                Initializing LightShell v1.0.0...<br />
+                                Loading modules... [OK]<br />
+                                System check... [OK]<br />
+                            </div>
+                            <div className="mt-4 flex gap-2">
+                                <span className="text-green-400">➜</span>
+                                <span className="text-blue-400">lightshell</span>
+                                <span className="text-gray-400">git:(main)</span>
+                                <span className="animate-pulse">_</span>
+                            </div>
+                        </div>
                     </div>
                 </motion.div>
             </motion.div>
