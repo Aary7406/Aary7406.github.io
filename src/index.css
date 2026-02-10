@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Caveat:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Caveat:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap');
 
 @font-face {
   font-family: 'Kisthe';
@@ -27,7 +27,7 @@
 @import "tailwindcss";
 
 /* Custom theme configuration for Tailwind v4 */
-@theme{
+@theme {
   /* AMOLED Dark Mode Base */
   --color-dark-base: #000000;
   --color-dark-surface: #0a0a0a;
@@ -170,15 +170,20 @@
 
 /* Keyframe animations */
 @keyframes gradientFloat {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translate(0, 0) scale(1);
   }
+
   25% {
     transform: translate(5%, -5%) scale(1.05);
   }
+
   50% {
     transform: translate(-5%, 5%) scale(0.95);
   }
+
   75% {
     transform: translate(-3%, -3%) scale(1.02);
   }
@@ -189,6 +194,7 @@
     opacity: 0;
     transform: translateX(-50%) translateY(-20px);
   }
+
   to {
     opacity: 1;
     transform: translateX(-50%) translateY(0);
@@ -200,6 +206,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -208,4 +215,45 @@
 .animate-spin-slow {
   animation: spin-slow 8s linear infinite;
   will-change: transform;
+}
+
+/* Contact pill buttons */
+.contact-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1.25rem;
+  border-radius: 9999px;
+  background-color: rgba(0, 0, 0, 0.15);
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.4s cubic-bezier(0.33, 1, 0.68, 1),
+    background-color 0.4s cubic-bezier(0.33, 1, 0.68, 1),
+    padding 0.4s cubic-bezier(0.33, 1, 0.68, 1);
+  user-select: none;
+}
+
+.contact-pill--expanded {
+  background-color: rgba(0, 0, 0, 0.25);
+  padding: 0.75rem 1.75rem;
+}
+
+.contact-pill-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  transition: transform 0.4s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.contact-pill--expanded .contact-pill-icon {
+  transform: scale(1.1);
+}
+
+.contact-pill-text {
+  display: inline-flex;
+  overflow: hidden;
 }

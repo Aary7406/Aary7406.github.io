@@ -142,9 +142,6 @@ function App() {
           </div>
         </div>
       </main>
-      <footer className="relative z-10 py-8 text-center text-light-muted bg-dark-base border-t border-glass-border">
-        <p className="text-sm">© {new Date().getFullYear()} Aary Hinge. Crafted with passion.</p>
-      </footer>
     </div>
   );
 }
