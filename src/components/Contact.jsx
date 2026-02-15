@@ -8,7 +8,7 @@ const socials = [
     id: 'instagram',
     short: 'IG',
     full: 'Instagram',
-    href: '#',
+    href: 'https://www.instagram.com/aary7406/',
     brandColor: '#E4405F',
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 24 24">
@@ -20,7 +20,7 @@ const socials = [
     id: 'telegram',
     short: 'TG',
     full: 'Telegram',
-    href: '#',
+    href: 'https://t.me/Jiraiya7406',
     brandColor: '#26A5E4',
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 24 24">
@@ -44,7 +44,7 @@ const socials = [
     id: 'contra',
     short: 'CO',
     full: 'Contra',
-    href: '#',
+    href: 'https://contra.com/aary_8zunt7b8?referralExperimentNid=DEFAULT_REFERRAL_PROGRAM&referrerUsername=aary_8zunt7b8',
     brandColor: '#FDEE21',
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 24 24">
@@ -56,7 +56,7 @@ const socials = [
     id: 'freelancer',
     short: 'FR',
     full: 'Freelancer',
-    href: '#',
+    href: 'https://www.freelancer.in/u/Aary7406?sb=t',
     brandColor: '#29B2FE',
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 24 24">
@@ -194,7 +194,7 @@ const GifRevealText = () => {
           }}
         />
       </span>
-      <span> reply.</span>
+      <span>&nbsp;reply.</span>
     </span>
   );
 };

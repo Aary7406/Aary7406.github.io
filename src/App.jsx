@@ -17,14 +17,13 @@ function App() {
   const [loading, setLoading] = useState(true);
   const lenisRef = useRef(null);
 
+  // Loader drives its own exit via onComplete; fallback timeout as safety net
   useEffect(() => {
-    // Simulate loading time
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 2000);
-
-    return () => clearTimeout(timer);
+    const fallback = setTimeout(() => setLoading(false), 5000);
+    return () => clearTimeout(fallback);
   }, []);
+
+  const handleLoaderComplete = () => setLoading(false);
 
   useEffect(() => {
     // Initialize simple Lenis only after loading is complete
@@ -90,7 +89,7 @@ function App() {
   }, [loading]);
 
   if (loading) {
-    return <Loader />;
+    return <Loader onComplete={handleLoaderComplete} />;
   }
 
   return (

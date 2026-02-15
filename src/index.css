@@ -257,3 +257,85 @@
   display: inline-flex;
   overflow: hidden;
 }
+
+/* ─── Loader ─── */
+.loader-panel {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 61;
+  overflow: hidden;
+}
+
+.loader-panel-top {
+  top: 0;
+  height: 50vh;
+}
+
+.loader-panel-bottom {
+  bottom: 0;
+  height: 50vh;
+}
+
+/* Background as a div with background-image for reliable cover behaviour */
+.loader-panel-bg {
+  position: absolute;
+  left: -5%;
+  width: 110%;
+  height: 100vh;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: blur(20px) brightness(0.3);
+  pointer-events: none;
+}
+
+/* Top panel: image starts at top of panel (aligned to viewport top) */
+.loader-panel-top .loader-panel-bg {
+  top: 0;
+}
+
+/* Bottom panel: shift image up so it continues seamlessly from the top half */
+.loader-panel-bg.loader-panel-bg--bottom {
+  top: -50vh;
+}
+
+.loader-panel-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+}
+
+.loader-text-wrapper {
+  position: fixed;
+  inset: 0;
+  z-index: 62;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.loader-heading {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: clamp(3rem, 10vw, 8rem);
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  line-height: 1;
+  margin: 0;
+  display: flex;
+}
+
+/* Overflow-hidden mask for each character — creates the reveal clip */
+.loader-char-mask {
+  display: inline-block;
+  overflow: hidden;
+  line-height: 1.15;
+}
+
+.loader-char {
+  display: inline-block;
+  will-change: transform;
+}

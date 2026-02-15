@@ -1,76 +1,101 @@
 import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
+import loaderBg from '../assets/Loader.png';
 
-const Loader = () => {
-  const loaderRef = useRef(null);
-  const textRef = useRef(null);
-  const dotsRef = useRef([]);
+const LOADER_TEXT = 'TheAary';
+
+const Loader = ({ onComplete }) => {
+  const topPanelRef = useRef(null);
+  const bottomPanelRef = useRef(null);
+  const textWrapperRef = useRef(null);
+  const charsRef = useRef([]);
 
   useEffect(() => {
-    const tl = gsap.timeline();
-    
-    // Animate the text
-    tl.to(textRef.current, {
-      duration: 1,
-      y: 0,
-      opacity: 1,
-      ease: "power4.out"
-    });
-    
-    // Animate dots in sequence
-    dotsRef.current.forEach((dot, index) => {
-      gsap.to(dot, {
-        scale: 1.5,
-        opacity: 1,
-        duration: 0.6,
-        ease: "power2.inOut",
-        yoyo: true,
-        repeat: -1,
-        delay: index * 0.15
-      });
-    });
-    
-    return () => {
-      tl.kill();
-      dotsRef.current.forEach(dot => gsap.killTweensOf(dot));
-    };
-  }, []);
+    charsRef.current = charsRef.current.slice(0, LOADER_TEXT.length);
 
-  const addDotRef = (el) => {
-    if (el && !dotsRef.current.includes(el)) {
-      dotsRef.current.push(el);
-    }
-  };
+    const tl = gsap.timeline({
+      onComplete: () => {
+        if (onComplete) onComplete();
+      },
+    });
+
+    // 1. Slide-up reveal: characters start below their mask and slide into view
+    tl.from(charsRef.current, {
+      yPercent: 110,
+      stagger: 0.07,
+      duration: 0.6,
+      ease: 'power4.out',
+    });
+
+    // 2. Hold for the user to read
+    tl.to({}, { duration: 0.6 });
+
+    // 3. Slide characters back out (upward, reverse reveal)
+    tl.to(charsRef.current, {
+      yPercent: -110,
+      stagger: 0.04,
+      duration: 0.45,
+      ease: 'power3.in',
+    });
+
+    // 4. Split panels apart (simultaneous)
+    tl.to(
+      topPanelRef.current,
+      {
+        yPercent: -100,
+        duration: 0.8,
+        ease: 'power3.inOut',
+      },
+    );
+    tl.to(
+      bottomPanelRef.current,
+      {
+        yPercent: 100,
+        duration: 0.8,
+        ease: 'power3.inOut',
+      },
+      '<'
+    );
+
+    return () => tl.kill();
+  }, [onComplete]);
 
   return (
-    <div 
-      ref={loaderRef}
-      className="fixed inset-0 flex flex-col items-center justify-center bg-dark-base z-50"
-    >
-      <div className="flex flex-col items-center">
-        <h1 
-          ref={textRef}
-          className="font-display text-5xl md:text-7xl font-bold text-light-primary opacity-0 transform translate-y-8"
-        >
-          Aary<span className="text-accent-cyan">.</span>
-        </h1>
-        
-        <div className="flex mt-10 space-x-2">
-          <div
-            ref={addDotRef}
-            className="w-2 h-2 rounded-full bg-accent-cyan opacity-30 transform scale-75"
-          />
-          <div
-            ref={addDotRef}
-            className="w-2 h-2 rounded-full bg-accent-magenta opacity-30 transform scale-75"
-          />
-          <div
-            ref={addDotRef}
-            className="w-2 h-2 rounded-full bg-accent-lime opacity-30 transform scale-75"
-          />
-        </div>
+    <>
+      {/* ─── Top half panel ─── */}
+      <div ref={topPanelRef} className="loader-panel loader-panel-top">
+        <div
+          className="loader-panel-bg"
+          style={{ backgroundImage: `url(${loaderBg})` }}
+        />
+        <div className="loader-panel-overlay" />
       </div>
-    </div>
+
+      {/* ─── Bottom half panel ─── */}
+      <div ref={bottomPanelRef} className="loader-panel loader-panel-bottom">
+        <div
+          className="loader-panel-bg loader-panel-bg--bottom"
+          style={{ backgroundImage: `url(${loaderBg})` }}
+        />
+        <div className="loader-panel-overlay" />
+      </div>
+
+      {/* ─── Centered text ─── */}
+      <div ref={textWrapperRef} className="loader-text-wrapper">
+        <h1 className="loader-heading" aria-label={LOADER_TEXT}>
+          {LOADER_TEXT.split('').map((char, i) => (
+            <span key={i} className="loader-char-mask">
+              <span
+                ref={(el) => { charsRef.current[i] = el; }}
+                className="loader-char"
+              >
+                {char}
+              </span>
+            </span>
+          ))}
+        </h1>
+      </div>
+    </>
   );
 };
 
