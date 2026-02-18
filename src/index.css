@@ -339,3 +339,40 @@
   display: inline-block;
   will-change: transform;
 }
+
+/* ─── Contact mesh gradient background ─── */
+.contact-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.contact-bg-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.contact-bg-img-1 {
+  z-index: 0;
+}
+
+.contact-bg-img-2 {
+  z-index: 1;
+  animation: meshCrossfade 10s ease-in-out infinite;
+}
+
+@keyframes meshCrossfade {
+
+  0%,
+  100% {
+    opacity: 0;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}

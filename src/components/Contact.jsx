@@ -1,5 +1,8 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { parseGIF, decompressFrames } from 'gifuct-js';
+import meshGradient1 from '../assets/MeshGradient1.jpeg';
+import meshGradient2 from '../assets/MeshGradient2.jpeg';
 import catKissGif from '../assets/catkiss.gif';
 
 // Social platform data
@@ -162,6 +165,103 @@ const SocialPill = ({ social }) => {
   );
 };
 
+// ─── Boomerang GIF on canvas (slow + reverse) ───
+const PLAYBACK_SPEED = 1.2; // multiplier on original frame delay (higher = slower)
+
+const BoomerangGif = ({ src, size, className = '', style = {} }) => {
+  const canvasRef = useRef(null);
+  const rafRef = useRef(null);
+  const framesRef = useRef([]);
+  const tempCanvasRef = useRef(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const load = async () => {
+      const resp = await fetch(src);
+      const buff = await resp.arrayBuffer();
+      const gif = parseGIF(buff);
+      const rawFrames = decompressFrames(gif, true);
+      if (cancelled || rawFrames.length === 0) return;
+
+      // Boomerang: forward frames + reversed frames (skip first/last to avoid stutter)
+      const boomerang = [
+        ...rawFrames,
+        ...rawFrames.slice(1, -1).reverse(),
+      ];
+      framesRef.current = boomerang;
+
+      // Temp canvas for compositing each frame patch
+      const tc = document.createElement('canvas');
+      tc.width = rawFrames[0].dims.width;
+      tc.height = rawFrames[0].dims.height;
+      tempCanvasRef.current = tc;
+
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      canvas.width = tc.width;
+      canvas.height = tc.height;
+
+      // Start playback
+      let idx = 0;
+      let lastTime = performance.now();
+      const ctx = canvas.getContext('2d');
+      const tctx = tc.getContext('2d');
+
+      const tick = (now) => {
+        if (cancelled) return;
+        const frame = boomerang[idx];
+        const delay = (frame.delay || 100) * PLAYBACK_SPEED;
+
+        if (now - lastTime >= delay) {
+          // Render frame patch onto temp canvas
+          const imageData = tctx.createImageData(frame.dims.width, frame.dims.height);
+          imageData.data.set(frame.patch);
+          tctx.putImageData(imageData, 0, 0);
+
+          // If frame has disposal, clear main canvas first
+          if (frame.disposalType === 2) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+          }
+          ctx.drawImage(
+            tc,
+            0, 0, frame.dims.width, frame.dims.height,
+            frame.dims.left, frame.dims.top, frame.dims.width, frame.dims.height,
+          );
+
+          idx = (idx + 1) % boomerang.length;
+          lastTime = now;
+        }
+        rafRef.current = requestAnimationFrame(tick);
+      };
+
+      rafRef.current = requestAnimationFrame(tick);
+    };
+
+    load();
+    return () => {
+      cancelled = true;
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+  }, [src]);
+
+  const dim = size || 'clamp(3rem, 6vw, 5rem)';
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className={className}
+      style={{
+        width: dim,
+        height: dim,
+        objectFit: 'cover',
+        borderRadius: '0.5rem',
+        ...style,
+      }}
+    />
+  );
+};
+
 // "I always [gif] reply." hover reveal component
 const GifRevealText = () => {
   const [hovered, setHovered] = useState(false);
@@ -183,16 +283,7 @@ const GifRevealText = () => {
           verticalAlign: 'middle',
         }}
       >
-        <img
-          src={catKissGif}
-          alt="cat kiss"
-          className="rounded-lg"
-          style={{
-            height: 'clamp(3rem, 6vw, 5rem)',
-            width: 'clamp(3rem, 6vw, 5rem)',
-            objectFit: 'cover',
-          }}
-        />
+        <BoomerangGif src={catKissGif} />
       </span>
       <span>&nbsp;reply.</span>
     </span>
@@ -204,15 +295,21 @@ const Contact = () => {
     <section
       id="contact"
       className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden px-6"
-      style={{ backgroundColor: '#DC2626', fontFamily: 'Inter, sans-serif' }}
+      style={{ fontFamily: 'Inter, sans-serif' }}
     >
+      {/* Mesh gradient background — crossfade between two images */}
+      <div className="contact-bg" aria-hidden="true">
+        <img src={meshGradient1} alt="" className="contact-bg-img contact-bg-img-1" />
+        <img src={meshGradient2} alt="" className="contact-bg-img contact-bg-img-2" />
+      </div>
+
       {/* Heading */}
       <motion.h2
         initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
         viewport={{ once: true, amount: 0.3 }}
-        className="text-white text-center leading-tight tracking-tight mb-4"
+        className="text-white text-center leading-tight tracking-tight mb-4 relative z-10"
         style={{
           fontFamily: 'Inter, sans-serif',
           fontWeight: 800,
@@ -232,7 +329,7 @@ const Contact = () => {
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.15, ease: [0.25, 0.46, 0.45, 0.94] }}
         viewport={{ once: true, amount: 0.3 }}
-        className="text-lg md:text-xl text-white/60 text-center mb-14 max-w-md"
+        className="text-lg md:text-xl text-white/60 text-center mb-14 max-w-md relative z-10"
         style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}
       >
         Got a project in mind? Let's make it happen.
@@ -244,7 +341,7 @@ const Contact = () => {
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
         viewport={{ once: true, amount: 0.3 }}
-        className="flex flex-wrap justify-center gap-3 md:gap-4"
+        className="flex flex-wrap justify-center gap-3 md:gap-4 relative z-10"
       >
         {socials.map((social) => (
           <SocialPill key={social.id} social={social} />
@@ -252,16 +349,12 @@ const Contact = () => {
       </motion.div>
 
       {/* Footer text */}
-      <motion.p
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        transition={{ duration: 0.6, delay: 0.5 }}
-        viewport={{ once: true }}
-        className="absolute bottom-6 text-sm text-white/40 text-center"
+      <p
+        className="absolute bottom-6 left-0 right-0 text-sm text-white/40 text-center z-10"
         style={{ fontFamily: 'Inter, sans-serif' }}
       >
         © {new Date().getFullYear()} Aary Hinge. Crafted with passion.
-      </motion.p>
+      </p>
     </section>
   );
 };
