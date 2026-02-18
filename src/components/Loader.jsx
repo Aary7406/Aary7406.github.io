@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
-import loaderBg from '../assets/Loader.png';
+import loaderBg from '../assets/Loader.webp';
 
 const LOADER_TEXT = 'TheAary';
 

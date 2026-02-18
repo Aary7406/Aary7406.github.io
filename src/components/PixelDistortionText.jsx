@@ -15,6 +15,7 @@ const PixelDistortionText = ({ text = 'Aary.Hinge' }) => {
   const mouseRef = useRef({ x: 0.5, y: 0.5 });
   const targetMouseRef = useRef({ x: 0.5, y: 0.5 });
   const textTextureRef = useRef(null);
+  const isVisibleRef = useRef(true);
   const [fontLoaded, setFontLoaded] = useState(false);
 
   // Preload custom font
@@ -33,37 +34,37 @@ const PixelDistortionText = ({ text = 'Aary.Hinge' }) => {
   const createTextTexture = useCallback((text, width, height) => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
-    
+
     // High DPI for crisp text
     const dpr = Math.min(window.devicePixelRatio, 2);
     canvas.width = width * dpr;
     canvas.height = height * dpr;
-    
+
     ctx.scale(dpr, dpr);
-    
+
     // Transparent background
     ctx.clearRect(0, 0, width, height);
-    
+
     // Calculate responsive font size - bigger for visibility
     const fontSize = Math.min(width * 0.18, 200);
     ctx.font = `${fontSize}px "Kisthe", "Space Grotesk", system-ui, sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    
+
     // Create gradient for text
     const gradient = ctx.createLinearGradient(0, height * 0.3, width, height * 0.7);
     gradient.addColorStop(0, '#7dd3fc');    // Cyan
     gradient.addColorStop(0.5, '#f0abfc');  // Magenta
     gradient.addColorStop(1, '#bef264');    // Lime
-    
+
     ctx.fillStyle = gradient;
     ctx.fillText(text, width / 2, height / 2);
-    
+
     const texture = new THREE.CanvasTexture(canvas);
     texture.minFilter = THREE.LinearFilter;
     texture.magFilter = THREE.LinearFilter;
     texture.needsUpdate = true;
-    
+
     return texture;
   }, []);
 
@@ -175,13 +176,13 @@ const PixelDistortionText = ({ text = 'Aary.Hinge' }) => {
 
   const handleResize = useCallback(() => {
     if (!rendererRef.current || !materialRef.current || !containerRef.current) return;
-    
+
     const width = containerRef.current.clientWidth;
     const height = containerRef.current.clientHeight;
-    
+
     rendererRef.current.setSize(width, height);
     materialRef.current.uniforms.uResolution.value.set(width, height);
-    
+
     // Recreate text texture on resize
     if (textTextureRef.current) {
       textTextureRef.current.dispose();
@@ -240,10 +241,13 @@ const PixelDistortionText = ({ text = 'Aary.Hinge' }) => {
     const mesh = new THREE.Mesh(geometry, material);
     scene.add(mesh);
 
-    // Animation loop
+    // Animation loop — pauses render when off-screen to save CPU/GPU
     const startTime = Date.now();
     const animate = () => {
       frameRef.current = requestAnimationFrame(animate);
+
+      // Skip expensive rendering when hero is scrolled out of view
+      if (!isVisibleRef.current) return;
 
       // Smooth mouse interpolation
       mouseRef.current.x += (targetMouseRef.current.x - mouseRef.current.x) * 0.1;
@@ -257,21 +261,29 @@ const PixelDistortionText = ({ text = 'Aary.Hinge' }) => {
     };
     animate();
 
+    // IntersectionObserver — pause WebGL when hero scrolls out of view
+    const observer = new IntersectionObserver(
+      ([entry]) => { isVisibleRef.current = entry.isIntersecting; },
+      { threshold: 0.05 }
+    );
+    observer.observe(container);
+
     // Event listeners
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
     window.addEventListener('resize', handleResize, { passive: true });
 
     // Cleanup
     return () => {
+      observer.disconnect();
       if (frameRef.current) cancelAnimationFrame(frameRef.current);
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('resize', handleResize);
-      
+
       geometry.dispose();
       material.dispose();
       if (textTextureRef.current) textTextureRef.current.dispose();
       renderer.dispose();
-      
+
       if (container && renderer.domElement.parentNode === container) {
         container.removeChild(renderer.domElement);
       }
@@ -279,8 +291,8 @@ const PixelDistortionText = ({ text = 'Aary.Hinge' }) => {
   }, [text, fontLoaded, createTextTexture, handleMouseMove, handleResize, vertexShader, fragmentShader]);
 
   return (
-    <div 
-      ref={containerRef} 
+    <div
+      ref={containerRef}
       className="w-full h-64 md:h-80 lg:h-96 relative"
       style={{ minHeight: '280px' }}
       aria-label={text}

@@ -5,20 +5,23 @@ import PixelDistortionText from './PixelDistortionText';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const Hero = () => {
+const Hero = ({ loading = false }) => {
   const heroRef = useRef(null);
   const heroContentRef = useRef(null);
   const subtitleRef = useRef(null);
 
+  // Delay hero entrance animation until loader finishes
   useEffect(() => {
+    if (loading) return; // Don't animate while loader is showing
+
     // Main timeline for hero animations
-    const tl = gsap.timeline({ delay: 0.5 });
+    const tl = gsap.timeline({ delay: 0.3 });
 
     tl.fromTo(
       subtitleRef.current,
       { y: 40, opacity: 0 },
       { y: 0, opacity: 1, duration: 1, ease: 'power3.out' },
-      '+=0.3'
+      '+=0.2'
     );
 
     // Scale down effect as user scrolls - hero stays sticky, content scales
@@ -38,7 +41,7 @@ const Hero = () => {
       tl.kill();
       ScrollTrigger.getAll().forEach((t) => t.kill());
     };
-  }, []);
+  }, [loading]);
 
   return (
     <section
@@ -48,10 +51,10 @@ const Hero = () => {
     >
       {/* Background Image with Dark Overlay and Blur */}
       <div className="absolute inset-0">
-        <div 
+        <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
-            backgroundImage: 'url(/background.jpeg)',
+            backgroundImage: 'url(/background.webp)',
             filter: 'blur(4px)',
             transform: 'scale(1.08)',
           }}
@@ -69,7 +72,7 @@ const Hero = () => {
           </div>
 
           {/* Subtitle */}
-          <p 
+          <p
             ref={subtitleRef}
             className="text-2xl md:text-3xl lg:text-4xl text-light-secondary max-w-2xl mx-auto"
             style={{ fontFamily: 'Caveat, cursive' }}

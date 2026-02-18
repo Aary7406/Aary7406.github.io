@@ -10,12 +10,23 @@ import ProjectsSection from './components/ProjectsSection';
 import Contact from './components/Contact';
 import Navbar from './components/Navbar';
 import Loader from './components/Loader';
+
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger);
 
 function App() {
   const [loading, setLoading] = useState(true);
   const lenisRef = useRef(null);
+
+  // Lock scroll during loader
+  useEffect(() => {
+    if (loading) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [loading]);
 
   // Loader drives its own exit via onComplete; fallback timeout as safety net
   useEffect(() => {
@@ -88,16 +99,15 @@ function App() {
     }
   }, [loading]);
 
-  if (loading) {
-    return <Loader onComplete={handleLoaderComplete} />;
-  }
-
   return (
     <div className="bg-dark-base text-light-primary min-h-screen">
+      {/* Loader overlays everything — panels split apart to reveal the site behind */}
+      {loading && <Loader onComplete={handleLoaderComplete} />}
+
       <Navbar />
-      <main>
+      <main className="relative">
         {/* Hero is sticky and stays behind at z-0 */}
-        <Hero />
+        <Hero loading={loading} />
         {/* Spacer to account for sticky hero height */}
         <div className="h-screen" aria-hidden="true" />
 
@@ -107,7 +117,7 @@ function App() {
           <div
             className="absolute inset-0 pointer-events-none"
             style={{
-              backgroundImage: 'url(/Skills.png)',
+              backgroundImage: 'url(/Skills.webp)',
               backgroundSize: 'cover',
               backgroundPosition: 'center',
               backgroundRepeat: 'no-repeat',

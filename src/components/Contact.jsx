@@ -1,8 +1,8 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { parseGIF, decompressFrames } from 'gifuct-js';
-import meshGradient1 from '../assets/MeshGradient1.jpeg';
-import meshGradient2 from '../assets/MeshGradient2.jpeg';
+import meshGradient1 from '../assets/MeshGradient1.webp';
+import meshGradient2 from '../assets/MeshGradient2.webp';
 import catKissGif from '../assets/catkiss.gif';
 
 // Social platform data
