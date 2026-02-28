@@ -4,7 +4,7 @@
 import { useRef, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { gsap } from 'gsap';
-import LostImage from '../assets/Lost.PNG';
+import LostImage from '../assets/Lost.webp';
 
 // ============================================================
 // SECTION 1: Lost & Found Portal
@@ -146,7 +146,7 @@ const Section2 = ({ scrollYProgress }) => {
                 {/* Background */}
                 <div className="absolute inset-0 bg-black">
                     <div className="absolute inset-0" style={{
-                        backgroundImage: 'url(/services.jpg)', backgroundSize: 'cover', backgroundPosition: 'center',
+                        backgroundImage: 'url(/services.webp)', backgroundSize: 'cover', backgroundPosition: 'center',
                         filter: 'blur(25px) brightness(0.25)', opacity: 0.5
                     }} />
                 </div>

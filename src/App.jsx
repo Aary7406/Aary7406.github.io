@@ -1,13 +1,13 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, lazy, Suspense } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
 import Hero from './components/Hero';
 import About from './components/About';
 import Skills from './components/skills';
-import Services from './components/Services';
-import ProjectsSection from './components/ProjectsSection';
-import Contact from './components/Contact';
+const Services = lazy(() => import('./components/Services'));
+const ProjectsSection = lazy(() => import('./components/ProjectsSection'));
+const Contact = lazy(() => import('./components/Contact'));
 import Navbar from './components/Navbar';
 import Loader from './components/Loader';
 
@@ -130,7 +130,9 @@ function App() {
 
           <About />
           <Skills />
-          <Services />
+          <Suspense fallback={null}>
+            <Services />
+          </Suspense>
         </div>
 
         {/* Pastel red background layer - above Hero (z-5) but below Projects content */}
@@ -141,14 +143,16 @@ function App() {
           }}
         >
           {/* Projects section with its own background - z-10 to be above the red bg */}
-          <div className="relative z-10">
-            <ProjectsSection />
-          </div>
+          <Suspense fallback={null}>
+            <div className="relative z-10">
+              <ProjectsSection />
+            </div>
 
-          {/* Contact section */}
-          <div className="relative z-10">
-            <Contact />
-          </div>
+            {/* Contact section */}
+            <div className="relative z-10">
+              <Contact />
+            </div>
+          </Suspense>
         </div>
       </main>
     </div>

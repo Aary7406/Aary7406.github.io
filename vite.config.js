@@ -9,13 +9,14 @@ export default defineConfig({
   build: {
     outDir: 'docs',
     cssCodeSplit: true,
-    target: 'es2015',
+    target: 'esnext',
     rollupOptions: {
       output: {
         manualChunks: {
           'vendor-react': ['react', 'react-dom'],
           'vendor-animation': ['framer-motion', 'gsap', 'lenis'],
           'vendor-three': ['three'],
+          'vendor-gifuct': ['gifuct-js'],
         },
       },
     },

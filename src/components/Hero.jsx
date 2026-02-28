@@ -1,7 +1,7 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, Suspense, lazy } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import PixelDistortionText from './PixelDistortionText';
+const PixelDistortionText = lazy(() => import('./PixelDistortionText'));
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -68,7 +68,9 @@ const Hero = ({ loading = false }) => {
         <div className="max-w-6xl mx-auto text-center">
           {/* Main Name - Pixel Distortion Shader Text */}
           <div className="mb-6">
-            <PixelDistortionText text="Aary.Hinge" />
+            <Suspense fallback={<div className="w-full h-64 md:h-80 lg:h-96" style={{ minHeight: '280px' }} />}>
+              <PixelDistortionText text="Aary.Hinge" />
+            </Suspense>
           </div>
 
           {/* Subtitle */}
