@@ -1,24 +1,89 @@
 // src/pages/ProjectsPage.jsx
+import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import InnerTransition from '../components/transitions/InnerTransition';
+import ProjectsShader from '../webgl/ProjectsShader';
+import './ProjectsPage.css';
 
 // ── CUSTOMIZABLE ──────────────────────────────────────────────
-const ACCENT = '#7dd3fc';
-// ──────────────────────────────────────────────────────────────
+const ACCENT = '#ffeaeaff';
+
+// Images in display order — must match filenames in public/Projects/
+const IMAGE_URLS = [
+  '/Projects/Lost and found.png',
+  '/Projects/Converta.png',
+  '/Projects/LightShell.png',
+  '/Projects/Xreality.png',
+];
+// ─────────────────────────────────────────────────────────────
+
+const PROJECTS = [
+  {
+    title: 'Lost and Found Portal',
+    desc:  'A centralized platform to easily report and recover lost items.',
+    pills: [{ label: 'Open Source', type: '' }, { label: 'Active', type: 'active' }],
+    buttonClass: "lost-found-btn",
+    link: "https://lostportal.vercel.app"
+  },
+  {
+    title: 'Converta',
+    desc:  'A fast, elegant file conversion utility for everyday workflows.',
+    pills: [{ label: 'Open Source', type: '' }, { label: 'Active', type: 'active' }],
+    buttonClass: "converta-btn",
+    link:"https://github.com/Aary7406/Converta"
+  },
+  {
+    title: 'Lightshell',
+    desc:  'A next-generation, high-performance command line environment.',
+    pills: [{ label: 'Open Source', type: '' }, { label: 'Upcoming', type: 'upcoming' }],
+    buttonClass: "lightshell-btn",
+    buttonText: "Coming soon",
+    link:"#"
+  },
+  {
+    title: 'Xreality',
+    desc:  'Immersive augmented reality experiences pushing the boundaries of the digital realm.',
+    pills: [{ label: 'Upcoming', type: 'upcoming' }, { label: 'Closed Source', type: 'closed' }],
+    buttonClass: "reality-btn",
+    buttonText: "Coming soon",
+    link:"#"
+  },
+];
 
 export default function ProjectsPage() {
-  const navigate = useNavigate();
+  const navigate          = useNavigate();
+  const canvasContainerRef = useRef(null);
+  const scrollContentRef   = useRef(null);
+  const shaderRef          = useRef(null);
+
+  useEffect(() => {
+    if (!canvasContainerRef.current || !scrollContentRef.current) return;
+
+    const shader = new ProjectsShader(
+      canvasContainerRef.current,
+      scrollContentRef.current,
+      IMAGE_URLS
+    );
+
+    shaderRef.current = shader;
+
+    return () => {
+      shaderRef.current?.destroy();
+      shaderRef.current = null;
+    };
+  }, []);
 
   return (
     <InnerTransition>
-      <div className="bg-dark-base text-light-primary min-h-screen flex flex-col items-center justify-center px-6">
-        {/* Back button */}
+      <div className="projects-wrapper">
+
+        {/* Back button — fixed, always above canvas */}
         <motion.button
           onClick={() => navigate('/')}
-          className="absolute top-8 left-8 flex items-center gap-2 text-sm font-medium cursor-pointer"
+          className="back-btn"
           style={{ color: ACCENT }}
-          whileHover={{ x: -4 }}
+          whileHover={{ x: -5 }}
           aria-label="Go back to home"
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -27,28 +92,40 @@ export default function ProjectsPage() {
           Back
         </motion.button>
 
-        {/* WIP Banner */}
-        <div className="text-center">
-          <h1
-            className="text-4xl md:text-6xl font-bold mb-6"
-            style={{ fontFamily: 'Space Grotesk, sans-serif' }}
-          >
-            My <span style={{ color: ACCENT }}>Projects</span>
-          </h1>
-          <div
-            className="inline-flex items-center gap-3 px-6 py-3 rounded-full border"
-            style={{ borderColor: 'rgba(125, 211, 252, 0.3)', backgroundColor: 'rgba(125, 211, 252, 0.08)' }}
-          >
-            <span className="relative flex h-3 w-3">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ backgroundColor: ACCENT }} />
-              <span className="relative inline-flex rounded-full h-3 w-3" style={{ backgroundColor: ACCENT }} />
-            </span>
-            <span className="text-light-secondary text-lg font-medium">Work in Progress</span>
-          </div>
-          <p className="text-light-muted mt-6 max-w-md mx-auto">
-            This page is being built. Check back soon for a full showcase of my work.
-          </p>
+        {/* WebGL canvas — Three.js appends its <canvas> here */}
+        <div ref={canvasContainerRef} className="canvas-container" aria-hidden="true" />
+
+        {/* Scrollable sections — text floats above canvas */}
+        <div ref={scrollContentRef} className="scroll-content" style={{ willChange: 'transform' }}>
+          {PROJECTS.map((project, i) => (
+            <section
+              key={project.title}
+              className={`project-section${i === PROJECTS.length - 1 ? ' last' : ''}`}
+            >
+              <div className="project-sticky-content">
+                <div className="project-pills">
+                  {project.pills.map((pill) => (
+                    <span key={pill.label} className={`pill${pill.type ? ` pill-${pill.type}` : ''}`}>
+                      {pill.label}
+                    </span>
+                  ))}
+                </div>
+                <div className="project-info">
+                  <h1>{project.title}</h1>
+                  <p>{project.desc}</p>
+                  <a
+                  href={project.link || '#'}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                   className={`project-btn ${project.buttonClass}`}>
+                    {project.buttonText || "Check it out"}
+                    </a>
+                </div>
+              </div>
+            </section>
+          ))}
         </div>
+
       </div>
     </InnerTransition>
   );
