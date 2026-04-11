@@ -15,17 +15,18 @@ const IMAGE_URLS = [
   '/Projects/Converta.png',
   '/Projects/LightShell.png',
   '/Projects/Xreality.png',
+  '/Projects/commitgen.png',
 ];
 // ─────────────────────────────────────────────────────────────
 
 const PROJECTS = [
-  {
-    title: 'Lost and Found Portal',
-    desc:  'A centralized platform to easily report and recover lost items.',
-    pills: [{ label: 'Open Source', type: '' }, { label: 'Active', type: 'active' }],
-    buttonClass: "lost-found-btn",
-    link: "https://lostportal.vercel.app"
-  },
+    {
+      title: 'Lost and Found Portal',
+      desc:  'A centralized platform to easily report and recover lost items.',
+      pills: [{ label: 'Open Source', type: '' }, { label: 'Active', type: 'active' }],
+      buttonClass: "lost-found-btn",
+      link: "https://lostportal.vercel.app"
+    },
   {
     title: 'Converta',
     desc:  'A fast, elegant file conversion utility for everyday workflows.',
@@ -49,6 +50,13 @@ const PROJECTS = [
     buttonText: "Coming soon",
     link:"#"
   },
+  {
+    title: 'CommitGen',
+    desc:  'An AI-powered commit message generator that crafts clear, concise messages from your code changes.',
+    pills: [{ label: 'Closed Source', type: '' }, { label: 'Active', type: 'active' }],
+    buttonClass: "commitgen-btn",
+    link:"https://github.com/Aary7406/CommitGen"
+  }
 ];
 
 export default function ProjectsPage() {
