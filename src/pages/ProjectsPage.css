@@ -242,3 +242,24 @@
   color: #000000;
   transform: translateY(-5px) scale(1.1);
 }
+
+.project-btn.commitgen-btn {
+  padding: 10px 20px;
+  margin-top: 15px;
+  border-radius: 50px;
+  border: none;
+  background-color: #b57d38; /* Change this to your preferred color */
+  color: #ffffff;
+  font-family: 'Google Sans Flex', sans-serif;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.5s ease;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.project-btn.commitgen-btn:hover {
+  background-color: #ffffff;
+  color: #000000;
+  transform: translateY(-5px) scale(1.1);
+}

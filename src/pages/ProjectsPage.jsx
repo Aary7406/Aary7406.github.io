@@ -55,7 +55,7 @@ const PROJECTS = [
     desc:  'An AI-powered commit message generator that crafts clear, concise messages from your code changes.',
     pills: [{ label: 'Closed Source', type: '' }, { label: 'Active', type: 'active' }],
     buttonClass: "commitgen-btn",
-    link:"https://github.com/Aary7406/CommitGen"
+    link:"https://commitgencli.vercel.app"
   }
 ];
 
