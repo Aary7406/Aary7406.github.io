@@ -30,7 +30,7 @@ const BridgeCTA = () => {
     <div className="relative z-10 flex items-center justify-center py-20 md:py-28">
       <motion.button
         onClick={() => navigate('/projects')}
-        className="relative px-10 py-5 text-lg font-semibold tracking-widest uppercase rounded-full border-2 cursor-pointer overflow-hidden group"
+        className="relative px-10 py-5 text-lg font-semibold tracking-widest uppercase rounded-full border-2 cursor-pointer overflow-hidden group bridge-cta-btn"
         style={{
           borderColor: CTA_ACCENT,
           color: CTA_ACCENT,
@@ -49,12 +49,6 @@ const BridgeCTA = () => {
         <span className="relative z-10 group-hover:text-black transition-colors duration-500">
           {CTA_TEXT}
         </span>
-        {/* Glow on hover */}
-        <style>{`
-          .group:hover {
-            box-shadow: 0 0 25px ${CTA_GLOW_COLOR}, 0 0 50px ${CTA_GLOW_COLOR};
-          }
-        `}</style>
       </motion.button>
     </div>
   );
