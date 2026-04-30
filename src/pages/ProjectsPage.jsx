@@ -66,6 +66,9 @@ export default function ProjectsPage() {
   const shaderRef          = useRef(null);
 
   useEffect(() => {
+    // Force scroll to top on mount, as AnimatePresence might preserve previous scroll
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+
     if (!canvasContainerRef.current || !scrollContentRef.current) return;
 
     const shader = new ProjectsShader(

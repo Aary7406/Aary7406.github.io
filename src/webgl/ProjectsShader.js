@@ -161,6 +161,7 @@ export default class ProjectsShader {
   _initScrollTrigger() {
     // Lenis smooth scroll
     this.lenis = new Lenis();
+    this.lenis.scrollTo(0, { immediate: true });
     this.lenis.on('scroll', ScrollTrigger.update);
 
     // ScrollTrigger driving transitions
