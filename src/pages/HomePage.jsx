@@ -11,45 +11,55 @@ import About from '../components/About';
 import Skills from '../components/skills';
 import Navbar from '../components/Navbar';
 import Loader from '../components/Loader';
+import SpecularButton from '../components/SpecularButton';
+import { preloadProjectTextures } from '../webgl/ProjectsShader';
 const Services = lazy(() => import('../components/Services'));
 const ProjectsSection = lazy(() => import('../components/ProjectsSection'));
 const Contact = lazy(() => import('../components/Contact'));
 
 gsap.registerPlugin(ScrollTrigger);
 
+// Project images for pre-warming texture cache
+const PROJECT_IMAGES = [
+  '/Projects/Lost and found.png',
+  '/Projects/Converta.png',
+  '/Projects/LightShell.png',
+  '/Projects/Xreality.png',
+  '/Projects/commitgen.png',
+];
+
 // ── BRIDGE CTA CUSTOMIZATION ─────────────────────────────────
 const CTA_TEXT = 'Check Out All My Projects';
 const CTA_ACCENT = '#7dd3fc';          // accent-cyan
-const CTA_GLOW_COLOR = 'rgba(125, 211, 252, 0.4)';
 // ──────────────────────────────────────────────────────────────
 
 const BridgeCTA = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="relative z-10 flex items-center justify-center py-20 md:py-28">
-      <motion.button
+    <div className="relative z-10 flex items-center justify-center py-8 md:py-12">
+      <SpecularButton
+        size="lg"
+        radius={60}
+        tint="#0a33a4"
+        tintOpacity={0.15}
+        blur={12}
+        textColor="#ffffff"
+        lineColor="#7dd3fc"
+        baseColor="#38bdf8"
+        intensity={2.8}
+        shineSize={20}
+        shineFade={50}
+        thickness={1}
+        speed={0.4}
+        followMouse
+        proximity={260}
+        autoAnimate={false}
         onClick={() => navigate('/projects')}
-        className="relative px-10 py-5 text-lg font-semibold tracking-widest uppercase rounded-full border-2 cursor-pointer overflow-hidden group bridge-cta-btn"
-        style={{
-          borderColor: CTA_ACCENT,
-          color: CTA_ACCENT,
-          backgroundColor: 'transparent',
-        }}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.97 }}
-        aria-label="View all projects"
+        className="cursor-pointer tracking-widest uppercase font-semibold text-base md:text-lg"
       >
-        {/* Background fill on hover */}
-        <span
-          className="absolute inset-0 w-0 group-hover:w-full transition-all duration-500 ease-out"
-          style={{ backgroundColor: CTA_ACCENT }}
-        />
-        {/* Text */}
-        <span className="relative z-10 group-hover:text-black transition-colors duration-500">
-          {CTA_TEXT}
-        </span>
-      </motion.button>
+        {CTA_TEXT}
+      </SpecularButton>
     </div>
   );
 };
@@ -78,6 +88,12 @@ export default function HomePage() {
 
   useEffect(() => {
     if (!loading) {
+      // Pre-warm project textures during idle time in background
+      if ('requestIdleCallback' in window) {
+        window.requestIdleCallback(() => preloadProjectTextures(PROJECT_IMAGES));
+      } else {
+        setTimeout(() => preloadProjectTextures(PROJECT_IMAGES), 1500);
+      }
       const isMobile = window.innerWidth < 768;
       const lenis = new Lenis({
         duration: isMobile ? 0.8 : 1.2,

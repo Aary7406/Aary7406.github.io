@@ -421,19 +421,24 @@ const About = () => {
             </div>
 
             {/* Stats */}
-            <div className="flex gap-6 text-center">
+            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 sm:gap-6 text-center">
               <div>
                 <div className="text-xl md:text-2xl font-bold text-accent-cyan">CS</div>
                 <div className="text-light-muted text-xs">Bachelor's</div>
               </div>
-              <div className="w-px bg-glass-border" />
+              <div className="w-px h-8 bg-glass-border hidden sm:block" />
               <div>
-                <div className="text-xl md:text-2xl font-bold text-accent-magenta">∞</div>
+                <div className="text-xl md:text-2xl font-bold text-accent-magenta">CTO</div>
+                <div className="text-light-muted text-xs">@ SLV Agency</div>
+              </div>
+              <div className="w-px h-8 bg-glass-border hidden sm:block" />
+              <div>
+                <div className="text-xl md:text-2xl font-bold text-accent-lime">∞</div>
                 <div className="text-light-muted text-xs">Curiosity</div>
               </div>
-              <div className="w-px bg-glass-border" />
+              <div className="w-px h-8 bg-glass-border hidden sm:block" />
               <div>
-                <div className="text-xl md:text-2xl font-bold text-accent-lime">24/7</div>
+                <div className="text-xl md:text-2xl font-bold text-accent-yellow">24/7</div>
                 <div className="text-light-muted text-xs">Learning</div>
               </div>
             </div>
@@ -442,7 +447,8 @@ const About = () => {
           {/* RIGHT: Bio */}
           <div ref={bioRef} className="space-y-5">
             <FloatingParagraph delay={0} scrollProgress={bioScrollProgress}>
-              I'm a <span className="text-accent-cyan font-medium">Computer Science student</span> with a passion 
+              I'm a <span className="text-accent-cyan font-medium">Computer Science student</span> and 
+              <span className="text-accent-magenta font-medium"> CTO at SLV</span>, with a passion 
               for understanding systems — from web applications down to kernel-level optimizations.
             </FloatingParagraph>
 

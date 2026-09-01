@@ -99,30 +99,28 @@ const skillCategories = [
 ];
 
 // Text skill item with slide-in animation
-const SkillText = ({ skill, index, parentProgress, baseDelay }) => {
-  // Stagger delay based on index - increased for more dramatic effect
-  const staggerDelay = baseDelay + index * 0.025;
-  
-  // Calculate individual item progress - blur clears around 55% viewport
-  const itemStart = staggerDelay;
-  const itemEnd = 0.38 + staggerDelay;
+const SkillText = ({ skill, index, totalSkills, scrollProgress }) => {
+  // Stagger delay based on index - distributed so all skills complete within 40% viewport from bottom
+  const staggerRatio = totalSkills > 1 ? index / (totalSkills - 1) : 0;
+  const itemStart = 0.05 + staggerRatio * 0.35;
+  const itemEnd = Math.min(1.0, itemStart + 0.5);
   
   const opacity = useTransform(
-    parentProgress,
+    scrollProgress,
     [itemStart, itemEnd],
     [0, 1]
   );
   
-  // Slide in from right - increased distance
+  // Slide in from right
   const x = useTransform(
-    parentProgress,
+    scrollProgress,
     [itemStart, itemEnd],
-    [80, 0]
+    [50, 0]
   );
   
-  // Blur effect - increased intensity
+  // Blur effect - completely clears by 40% viewport from bottom
   const blur = useTransform(
-    parentProgress,
+    scrollProgress,
     [itemStart, itemEnd],
     [12, 0]
   );
@@ -145,29 +143,35 @@ const SkillText = ({ skill, index, parentProgress, baseDelay }) => {
 };
 
 // Subsection component
-const Subsection = ({ subsection, subsectionIndex, parentProgress, accentClass }) => {
-  const baseDelay = 0.08 + subsectionIndex * 0.08;
+const Subsection = ({ subsection, subsectionIndex, accentClass }) => {
+  const subsectionRef = useRef(null);
   
+  // Scroll progress for this subsection - completes within bottom 40% of viewport (60% from top)
+  const { scrollYProgress } = useScroll({
+    target: subsectionRef,
+    offset: ['start end', 'end 0.6'],
+  });
+
   const labelOpacity = useTransform(
-    parentProgress,
-    [baseDelay, baseDelay + 0.30],
+    scrollYProgress,
+    [0.0, 0.5],
     [0, 1]
   );
   
   const labelX = useTransform(
-    parentProgress,
-    [baseDelay, baseDelay + 0.30],
-    [60, 0]
+    scrollYProgress,
+    [0.0, 0.5],
+    [40, 0]
   );
   
   const labelBlur = useTransform(
-    parentProgress,
-    [baseDelay, baseDelay + 0.30],
+    scrollYProgress,
+    [0.0, 0.5],
     [10, 0]
   );
 
   return (
-    <div className="flex flex-col items-end gap-2 max-w-xl lg:max-w-2xl">
+    <div ref={subsectionRef} className="flex flex-col items-end gap-2 max-w-xl lg:max-w-2xl">
       {/* Subsection label */}
       <motion.span
         style={{ 
@@ -187,8 +191,8 @@ const Subsection = ({ subsection, subsectionIndex, parentProgress, accentClass }
             key={skill}
             skill={skill}
             index={skillIndex}
-            parentProgress={parentProgress}
-            baseDelay={baseDelay + 0.02}
+            totalSkills={subsection.skills.length}
+            scrollProgress={scrollYProgress}
           />
         ))}
       </div>
@@ -198,23 +202,23 @@ const Subsection = ({ subsection, subsectionIndex, parentProgress, accentClass }
 
 // Individual skill category section
 const SkillCategory = ({ category, index }) => {
-  const sectionRef = useRef(null);
+  const titleRef = useRef(null);
   
-  // Scroll progress for this section
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ['start end', 'end start'],
+  // Scroll progress for the title - unblurs within bottom 40% of viewport (60% from top)
+  const { scrollYProgress: titleProgress } = useScroll({
+    target: titleRef,
+    offset: ['start end', 'end 0.6'],
   });
   
-  // Title animations - completes around 55% viewport
-  const titleBlur = useTransform(scrollYProgress, [0.05, 0.28], [15, 0]);
-  const titleOpacity = useTransform(scrollYProgress, [0.05, 0.25], [0, 1]);
-  const titleY = useTransform(scrollYProgress, [0.05, 0.28], [50, 0]);
+  // Title animations - fully sharp by 40% viewport from bottom
+  const titleBlur = useTransform(titleProgress, [0.0, 0.7], [15, 0]);
+  const titleOpacity = useTransform(titleProgress, [0.0, 0.6], [0, 1]);
+  const titleY = useTransform(titleProgress, [0.0, 0.7], [40, 0]);
   
   // Subtitle animations with slight delay
-  const subtitleBlur = useTransform(scrollYProgress, [0.08, 0.32], [12, 0]);
-  const subtitleOpacity = useTransform(scrollYProgress, [0.08, 0.28], [0, 1]);
-  const subtitleY = useTransform(scrollYProgress, [0.08, 0.32], [35, 0]);
+  const subtitleBlur = useTransform(titleProgress, [0.1, 0.85], [12, 0]);
+  const subtitleOpacity = useTransform(titleProgress, [0.1, 0.75], [0, 1]);
+  const subtitleY = useTransform(titleProgress, [0.1, 0.85], [25, 0]);
 
   // Determine accent color classes
   const getAccentClasses = (accent) => {
@@ -229,12 +233,11 @@ const SkillCategory = ({ category, index }) => {
 
   return (
     <section
-      ref={sectionRef}
       className="min-h-[70vh] overflow-hidden flex flex-col justify-center py-16 md:py-20 relative"
     >
       <div className="container mx-auto px-6 relative z-10">
         {/* Huge typography title - top */}
-        <div className="mb-10 md:mb-14">
+        <div ref={titleRef} className="mb-10 md:mb-14">
           <motion.h2
             style={{
               filter: useTransform(titleBlur, (v) => `blur(${v}px)`),
@@ -268,7 +271,6 @@ const SkillCategory = ({ category, index }) => {
               key={subsection.name}
               subsection={subsection}
               subsectionIndex={subIndex}
-              parentProgress={scrollYProgress}
               accentClass={getAccentClasses(category.accent)}
             />
           ))}

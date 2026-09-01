@@ -4,14 +4,14 @@
 import { useRef, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { gsap } from 'gsap';
-import LostImage from '../assets/Lost.webp';
-
 // ============================================================
-// SECTION 1: Lost & Found Portal
+// ============================================================
+// ============================================================
+// SECTION 1: CommitGen
 // ============================================================
 const Section1 = ({ scrollYProgress }) => {
     const orbsRef = useRef([]);
-    const title = "Lost & Found Portal";
+    const title = "CommitGen";
 
     // Perspective: scales out in SECOND HALF (0.4-0.6)
     const scale = useTransform(scrollYProgress, [0.4, 0.6], [1, 0.8]);
@@ -52,56 +52,69 @@ const Section1 = ({ scrollYProgress }) => {
                 style={{ scale, rotate, transformOrigin: 'center top' }}
                 className="sticky top-0 h-screen w-full overflow-hidden"
             >
-                {/* Background */}
-                <div className="absolute inset-0 bg-ctp-base">
+                {/* Background: Orange and Black palette */}
+                <div className="absolute inset-0 bg-[#0a0a0a]">
                     <div ref={el => orbsRef.current[0] = el} className="absolute -top-1/4 -left-1/4 w-[70vw] h-[70vw] rounded-full"
-                        style={{ background: 'radial-gradient(circle, rgba(198, 160, 246, 0.7) 0%, transparent 70%)', filter: 'blur(100px)' }} />
+                        style={{ background: 'radial-gradient(circle, rgba(249, 115, 22, 0.6) 0%, transparent 70%)', filter: 'blur(100px)' }} />
                     <div ref={el => orbsRef.current[1] = el} className="absolute top-1/4 -right-1/3 w-[60vw] h-[60vw] rounded-full"
-                        style={{ background: 'radial-gradient(circle, rgba(245, 189, 230, 0.6) 0%, transparent 70%)', filter: 'blur(100px)' }} />
+                        style={{ background: 'radial-gradient(circle, rgba(234, 88, 12, 0.5) 0%, transparent 70%)', filter: 'blur(100px)' }} />
                     <div ref={el => orbsRef.current[2] = el} className="absolute -bottom-1/3 left-1/4 w-[65vw] h-[65vw] rounded-full"
-                        style={{ background: 'radial-gradient(circle, rgba(138, 173, 244, 0.65) 0%, transparent 70%)', filter: 'blur(100px)' }} />
+                        style={{ background: 'radial-gradient(circle, rgba(251, 146, 60, 0.4) 0%, transparent 70%)', filter: 'blur(100px)' }} />
                     <div ref={el => orbsRef.current[3] = el} className="absolute top-1/2 left-1/2 w-[50vw] h-[50vw] rounded-full -translate-x-1/2 -translate-y-1/2"
-                        style={{ background: 'radial-gradient(circle, rgba(139, 213, 202, 0.5) 0%, transparent 70%)', filter: 'blur(80px)' }} />
-                    <div className="absolute inset-0" style={{ backgroundColor: 'rgba(36, 39, 58, 0.3)', backdropFilter: 'blur(20px) saturate(150%)' }} />
+                        style={{ background: 'radial-gradient(circle, rgba(194, 65, 12, 0.45) 0%, transparent 70%)', filter: 'blur(80px)' }} />
+                    <div className="absolute inset-0" style={{ backgroundColor: 'rgba(10, 10, 10, 0.4)', backdropFilter: 'blur(20px) saturate(150%)' }} />
                 </div>
 
                 {/* Badges */}
                 <div className="absolute top-4 right-4 md:top-6 md:right-6 flex gap-2 z-30">
                     <span className="px-3 py-1 text-xs rounded-full bg-green-500/20 text-green-400 border border-green-500/30 backdrop-blur-sm">Active</span>
-                    <span className="px-3 py-1 text-xs rounded-full bg-white/10 text-white/80 border border-white/20 backdrop-blur-sm">Open Source</span>
+                    <span className="px-3 py-1 text-xs rounded-full bg-white/10 text-white/80 border border-white/20 backdrop-blur-sm">Closed Source</span>
                 </div>
 
                 {/* Content */}
-                <div className="absolute bottom-8 left-8 z-20" style={{ maxWidth: '400px' }}>
+                <div className="absolute bottom-8 left-6 md:bottom-12 md:left-12 lg:left-16 z-20 max-w-sm sm:max-w-md md:max-w-lg">
                     <motion.div style={{ y: titleShiftY }}>
-                        <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-ctp-text" style={{ fontFamily: 'Space Grotesk' }}>
-                            {title.split('').map((char, i) => (
-                                <span key={i} className="inline-block overflow-hidden">
-                                    <motion.span className="inline-block"
-                                        style={{ y: getTitleCharY(i, title.length), opacity: getTitleCharOpacity(i, title.length) }}>
-                                        {char === ' ' ? '\u00A0' : char}
-                                    </motion.span>
-                                </span>
-                            ))}
+                        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight leading-tight" style={{ fontFamily: 'Space Grotesk' }}>
+                            {title.split(' ').map((word, wordIndex) => {
+                                const wordsBefore = title.split(' ').slice(0, wordIndex).join(' ');
+                                const baseOffset = wordsBefore.length > 0 ? wordsBefore.length + 1 : 0;
+                                return (
+                                    <span key={wordIndex} className="inline-block whitespace-nowrap mr-[0.28em] last:mr-0">
+                                        {word.split('').map((char, charIndex) => {
+                                            const i = baseOffset + charIndex;
+                                            return (
+                                                <span key={charIndex} className="inline-block overflow-hidden">
+                                                    <motion.span
+                                                        className="inline-block"
+                                                        style={{ y: getTitleCharY(i, title.length), opacity: getTitleCharOpacity(i, title.length) }}
+                                                    >
+                                                        {char}
+                                                    </motion.span>
+                                                </span>
+                                            );
+                                        })}
+                                    </span>
+                                );
+                            })}
                         </h2>
                     </motion.div>
-                    <div className="overflow-hidden mt-4">
-                        <motion.p className="text-base md:text-lg text-ctp-subtext0" style={{ y: descY, opacity: descOpacity, fontFamily: 'Inter' }}>
-                            A comprehensive web application for managing lost and found items in educational institutions, corporates, and government offices.
+                    <div className="overflow-hidden mt-3 md:mt-4">
+                        <motion.p className="text-sm sm:text-base md:text-lg text-gray-300 font-normal leading-relaxed" style={{ y: descY, opacity: descOpacity, fontFamily: 'Inter' }}>
+                            An AI-powered commit generator that analyzes your code changes to generate clear, concise, and conventional commit messages instantly.
                         </motion.p>
                     </div>
-                    <motion.a href="https://lostportal.vercel.app" target="_blank" rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 mt-4 px-4 py-2 text-sm rounded-full bg-ctp-mauve text-ctp-base font-medium hover:scale-105 transition-transform"
+                    <motion.a href="https://commitgencli.vercel.app" target="_blank" rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 mt-4 md:mt-5 px-5 md:px-6 py-2.5 md:py-3 text-sm rounded-full bg-orange-500 text-black font-semibold hover:bg-orange-400 hover:scale-105 transition-all shadow-lg shadow-orange-500/25"
                         style={{ opacity: ctaOpacity }}>
-                        View on GitHub →
+                        Check it out →
                     </motion.a>
                 </div>
 
                 {/* Image */}
-                <motion.div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[50%] max-w-xl z-10"
+                <motion.div className="absolute top-[35%] md:top-1/2 right-6 md:right-12 lg:right-16 -translate-y-1/2 w-[85%] md:w-[48%] max-w-xl z-10"
                     style={{ x: imageX, scale: imageScale, opacity: imageOpacity }}>
-                    <div className="relative rounded-xl overflow-hidden shadow-2xl">
-                        <img src={LostImage} alt="Lost & Found Portal" className="w-full h-auto" />
+                    <div className="relative rounded-xl overflow-hidden shadow-2xl border border-white/10">
+                        <img src="/commitgen.png" alt="CommitGen" className="w-full h-auto" />
                     </div>
                 </motion.div>
             </motion.div>
@@ -110,10 +123,11 @@ const Section1 = ({ scrollYProgress }) => {
 };
 
 // ============================================================
-// SECTION 2: LightShell
+// SECTION 2: Sovilifestyleventures
 // ============================================================
 const Section2 = ({ scrollYProgress }) => {
-    const title = "LightShell";
+    const orbsRef = useRef([]);
+    const title = "Sovi Lifestyle Ventures";
 
     // Perspective: scales IN during transition (0.4-0.6)
     const scale = useTransform(scrollYProgress, [0.4, 0.6], [0.8, 1]);
@@ -134,6 +148,17 @@ const Section2 = ({ scrollYProgress }) => {
     const titleShiftY = useTransform(scrollYProgress, [0.78, 0.86], ['0%', '-35%']);
     const descY = useTransform(scrollYProgress, [0.8, 0.9], ['50%', '0%']);
     const descOpacity = useTransform(scrollYProgress, [0.8, 0.88], [0, 1]);
+    const ctaOpacity = useTransform(scrollYProgress, [0.86, 0.92], [0, 1]);
+
+    useEffect(() => {
+        const orbs = orbsRef.current.filter(Boolean);
+        const anims = orbs.map((orb, i) => {
+            const dirs = [[-50, 60], [60, -55], [-60, -50], [55, 50]];
+            const [x, y] = dirs[i] || [-40, 40];
+            return gsap.to(orb, { x, y, duration: 16 + i * 4, repeat: -1, yoyo: true, ease: 'sine.inOut' });
+        });
+        return () => anims.forEach(a => a.kill());
+    }, []);
 
     return (
         // WRAPPER: 50% of total height
@@ -143,76 +168,71 @@ const Section2 = ({ scrollYProgress }) => {
                 style={{ scale, rotate, transformOrigin: 'center top' }}
                 className="sticky top-0 h-screen w-full overflow-hidden"
             >
-                {/* Background */}
-                <div className="absolute inset-0 bg-black">
-                    <div className="absolute inset-0" style={{
-                        backgroundImage: 'url(/services.webp)', backgroundSize: 'cover', backgroundPosition: 'center',
-                        filter: 'blur(25px) brightness(0.25)', opacity: 0.5
-                    }} />
+                {/* Background: Rich Sky Blue with subtle luminous highlights */}
+                <div className="absolute inset-0 bg-gradient-to-br from-sky-500 via-sky-600 to-sky-900">
+                    <div ref={el => orbsRef.current[0] = el} className="absolute -top-1/4 -left-1/4 w-[70vw] h-[70vw] rounded-full"
+                        style={{ background: 'radial-gradient(circle, rgba(56, 189, 248, 0.75) 0%, rgba(14, 165, 233, 0.4) 50%, transparent 70%)', filter: 'blur(80px)' }} />
+                    <div ref={el => orbsRef.current[1] = el} className="absolute top-1/4 -right-1/3 w-[60vw] h-[60vw] rounded-full"
+                        style={{ background: 'radial-gradient(circle, rgba(2, 132, 199, 0.8) 0%, rgba(3, 105, 161, 0.5) 60%, transparent 70%)', filter: 'blur(90px)' }} />
+                    <div ref={el => orbsRef.current[2] = el} className="absolute -bottom-1/3 left-1/4 w-[65vw] h-[65vw] rounded-full"
+                        style={{ background: 'radial-gradient(circle, rgba(125, 211, 252, 0.55) 0%, rgba(14, 165, 233, 0.35) 60%, transparent 70%)', filter: 'blur(80px)' }} />
+                    <div ref={el => orbsRef.current[3] = el} className="absolute top-1/2 left-1/2 w-[50vw] h-[50vw] rounded-full -translate-x-1/2 -translate-y-1/2"
+                        style={{ background: 'radial-gradient(circle, rgba(255, 255, 255, 0.25) 0%, rgba(56, 189, 248, 0.4) 60%, transparent 70%)', filter: 'blur(70px)' }} />
+                    <div className="absolute inset-0 bg-sky-950/20 backdrop-blur-[2px]" />
                 </div>
 
                 {/* Badges */}
                 <div className="absolute top-4 right-4 md:top-6 md:right-6 flex gap-2 z-30">
-                    <span className="px-3 py-1 text-xs rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/30 backdrop-blur-sm">Upcoming</span>
-                    <span className="px-3 py-1 text-xs rounded-full bg-white/10 text-white/80 border border-white/20 backdrop-blur-sm">Open Source</span>
+                    <span className="px-3.5 py-1 text-xs font-semibold rounded-full bg-emerald-400/25 text-emerald-200 border border-emerald-400/40 backdrop-blur-md">Active</span>
+                    <span className="px-3.5 py-1 text-xs font-semibold rounded-full bg-white/20 text-white border border-white/30 backdrop-blur-md">Closed Source</span>
                 </div>
 
                 {/* Content */}
-                <div className="absolute bottom-8 left-8 z-20" style={{ maxWidth: '400px' }}>
+                <div className="absolute bottom-8 left-6 md:bottom-12 md:left-12 lg:left-16 z-20 max-w-sm sm:max-w-md md:max-w-lg">
                     <motion.div style={{ y: titleShiftY }}>
-                        <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white" style={{ fontFamily: 'JetBrains Mono' }}>
-                            {title.split('').map((char, i) => (
-                                <span key={i} className="inline-block overflow-hidden">
-                                    <motion.span className="inline-block"
-                                        style={{ y: getTitleCharY(i, title.length), opacity: getTitleCharOpacity(i, title.length) }}>
-                                        {char === ' ' ? '\u00A0' : char}
-                                    </motion.span>
-                                </span>
-                            ))}
+                        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight leading-tight" style={{ fontFamily: 'Space Grotesk' }}>
+                            {title.split(' ').map((word, wordIndex) => {
+                                const wordsBefore = title.split(' ').slice(0, wordIndex).join(' ');
+                                const baseOffset = wordsBefore.length > 0 ? wordsBefore.length + 1 : 0;
+                                return (
+                                    <span key={wordIndex} className="inline-block whitespace-nowrap mr-[0.28em] last:mr-0">
+                                        {word.split('').map((char, charIndex) => {
+                                            const i = baseOffset + charIndex;
+                                            return (
+                                                <span key={charIndex} className="inline-block overflow-hidden">
+                                                    <motion.span
+                                                        className="inline-block"
+                                                        style={{ y: getTitleCharY(i, title.length), opacity: getTitleCharOpacity(i, title.length) }}
+                                                    >
+                                                        {char}
+                                                    </motion.span>
+                                                </span>
+                                            );
+                                        })}
+                                    </span>
+                                );
+                            })}
                         </h2>
                     </motion.div>
-                    <div className="overflow-hidden mt-4">
-                        <motion.p className="text-base md:text-lg text-gray-300" style={{ y: descY, opacity: descOpacity, fontFamily: 'Inter' }}>
-                            A non-POSIX shell built in C++ for Linux, focused on efficiency and modern features.
+                    <div className="overflow-hidden mt-3 md:mt-4">
+                        <motion.p className="text-sm sm:text-base md:text-lg text-sky-100 font-normal leading-relaxed" style={{ y: descY, opacity: descOpacity, fontFamily: 'Inter' }}>
+                            A modern, high-performance website designed and built for a premium lifestyle and business venture agency.
                         </motion.p>
                     </div>
+                    <motion.a href="https://sovilifestyleventures.vercel.app" target="_blank" rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 mt-4 md:mt-5 px-5 md:px-6 py-2.5 md:py-3 text-sm rounded-full bg-white text-sky-950 font-bold hover:bg-sky-50 hover:scale-105 transition-all shadow-xl shadow-sky-950/30"
+                        style={{ opacity: ctaOpacity }}>
+                        Check it out →
+                    </motion.a>
                 </div>
 
-                {/* CSS Terminal Window Placeholder */}
+                {/* Image */}
                 <motion.div
-                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60%] max-w-2xl z-20"
+                    className="absolute top-[35%] md:top-1/2 right-6 md:right-12 lg:right-16 -translate-y-1/2 w-[85%] md:w-[48%] max-w-xl z-10"
                     style={{ x: imageX, scale: imageScale, opacity: imageOpacity }}
                 >
-                    <div className="w-full rounded-lg overflow-hidden border border-white/10 bg-[#0f0f12] shadow-2xl">
-                        {/* Terminal Header */}
-                        <div className="bg-[#1a1b26] px-4 py-2 flex items-center gap-2 border-b border-white/5">
-                            <div className="flex gap-2">
-                                <div className="w-3 h-3 rounded-full bg-red-500/80"></div>
-                                <div className="w-3 h-3 rounded-full bg-yellow-500/80"></div>
-                                <div className="w-3 h-3 rounded-full bg-green-500/80"></div>
-                            </div>
-                            <div className="flex-1 text-center text-xs text-white/30 font-mono">user@lightshell:~</div>
-                        </div>
-                        {/* Terminal Body */}
-                        <div className="p-6 font-mono text-sm leading-relaxed text-gray-300">
-                            <div className="flex gap-2">
-                                <span className="text-green-400">➜</span>
-                                <span className="text-blue-400">~</span>
-                                <span className="text-gray-400">$</span>
-                                <span className="text-white">./lightshell</span>
-                            </div>
-                            <div className="mt-2 text-white/50">
-                                Initializing LightShell v1.0.0...<br />
-                                Loading modules... [OK]<br />
-                                System check... [OK]<br />
-                            </div>
-                            <div className="mt-4 flex gap-2">
-                                <span className="text-green-400">➜</span>
-                                <span className="text-blue-400">lightshell</span>
-                                <span className="text-gray-400">git:(main)</span>
-                                <span className="animate-pulse">_</span>
-                            </div>
-                        </div>
+                    <div className="relative rounded-xl overflow-hidden shadow-2xl border border-white/20 shadow-sky-950/40">
+                        <img src="/SLV.png" alt="Sovi Lifestyle Ventures" className="w-full h-auto" />
                     </div>
                 </motion.div>
             </motion.div>

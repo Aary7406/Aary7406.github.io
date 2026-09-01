@@ -1,7 +1,10 @@
 // src/webgl/ProjectsShader.js
-// Faithful port of agentPritam47/image-distortion main.js
-// Plain Three.js class — React-lifecycle-safe (init on mount, destroy on unmount).
-// Uses Lenis smooth scroll + GSAP ScrollTrigger for scroll-driven transitions.
+// Optimized high-performance Three.js WebGL distortion shader.
+// Features:
+// - Global texture cache (instant 0ms re-mounts)
+// - Hardware-accelerated async off-thread decoding via createImageBitmap
+// - Non-blocking progressive rendering (renders frame 1 immediately, streams remaining textures)
+// - Lenis smooth scroll + GSAP ScrollTrigger
 
 import * as THREE from 'three';
 import gsap from 'gsap';
@@ -13,14 +16,6 @@ import fragmentShader from '../shaders/projects/fragment.glsl';
 gsap.registerPlugin(ScrollTrigger);
 
 // ── CUSTOMIZABLE CONSTANTS ────────────────────────────────────
-// DISPLACEMENT_STRENGTH: how much the displacement map distorts UVs. Range: 0.2 → 1.2
-// RGB_SHIFT:             per-channel color separation. Range: 0.01 → 0.1
-// SCALE_EFFECT:          zoom at transition midpoint. Range: 0.05 → 0.3
-// TRANSITION_DURATION:   seconds per transition. Range: 0.4 → 1.5
-// TRANSITION_EASE:       GSAP easing function
-// PIXEL_RATIO_CAP:       caps DPR to avoid GPU overload. Range: 1 → 2
-// DISPLACEMENT_PATH:     path to displacement map in public/
-// ─────────────────────────────────────────────────────────────
 const DISPLACEMENT_STRENGTH = 0.8;
 const RGB_SHIFT             = 0.05;
 const SCALE_EFFECT          = 0.15;
@@ -29,12 +24,106 @@ const TRANSITION_EASE       = 'power3.inOut';
 const PIXEL_RATIO_CAP       = 2;
 const DISPLACEMENT_PATH     = '/displacement-13.jpg';
 
+// Global cache for instant re-mounts and cross-page prefetching
+const globalTextureCache = new Map();
+const pendingLoads = new Map();
+
+/**
+ * Loads a texture asynchronously with off-thread decoding using createImageBitmap when available.
+ */
+export async function loadAsyncTexture(url) {
+  if (globalTextureCache.has(url)) {
+    return globalTextureCache.get(url);
+  }
+  if (pendingLoads.has(url)) {
+    return pendingLoads.get(url);
+  }
+
+  const promise = (async () => {
+    try {
+      if (typeof window !== 'undefined' && 'createImageBitmap' in window) {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const blob = await res.blob();
+        let bitmap;
+        try {
+          bitmap = await createImageBitmap(blob, { imageOrientation: 'flipY' });
+        } catch {
+          bitmap = await createImageBitmap(blob);
+        }
+        const tex = new THREE.Texture(bitmap);
+        tex.flipY = false;
+        tex.wrapS = THREE.RepeatWrapping;
+        tex.wrapT = THREE.RepeatWrapping;
+        tex.minFilter = THREE.LinearFilter;
+        tex.magFilter = THREE.LinearFilter;
+        tex.generateMipmaps = false;
+        tex.needsUpdate = true;
+        globalTextureCache.set(url, tex);
+        return tex;
+      }
+    } catch {
+      // Fallback to THREE.TextureLoader
+    }
+
+    const loader = new THREE.TextureLoader();
+    return new Promise((resolve, reject) => {
+      loader.load(
+        url,
+        (tex) => {
+          tex.wrapS = THREE.RepeatWrapping;
+          tex.wrapT = THREE.RepeatWrapping;
+          tex.minFilter = THREE.LinearFilter;
+          tex.magFilter = THREE.LinearFilter;
+          tex.generateMipmaps = false;
+          globalTextureCache.set(url, tex);
+          resolve(tex);
+        },
+        undefined,
+        reject
+      );
+    });
+  })();
+
+  pendingLoads.set(url, promise);
+  try {
+    const tex = await promise;
+    return tex;
+  } finally {
+    pendingLoads.delete(url);
+  }
+}
+
+/**
+ * Preload an array of textures in the background (non-blocking).
+ */
+export function preloadProjectTextures(imageUrls) {
+  const allUrls = [...imageUrls, DISPLACEMENT_PATH];
+  allUrls.forEach((url) => {
+    if (!globalTextureCache.has(url) && !pendingLoads.has(url)) {
+      loadAsyncTexture(url).catch(() => {});
+    }
+  });
+}
+
+function createPlaceholderTexture() {
+  const data = new Uint8Array([18, 18, 22, 255]);
+  const tex = new THREE.DataTexture(data, 1, 1, THREE.RGBAFormat);
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.minFilter = THREE.LinearFilter;
+  tex.magFilter = THREE.LinearFilter;
+  tex.generateMipmaps = false;
+  tex.needsUpdate = true;
+  return tex;
+}
+
 export default class ProjectsShader {
   /**
    * @param {HTMLElement} containerEl  — DOM element to append canvas to
    * @param {HTMLElement} scrollEl     — the scrollable wrapper (trigger for ScrollTrigger)
    * @param {string[]}   imageUrls    — image paths in public/Projects/
-   * @param {Function}   [onReady]    — called after all textures are loaded and ScrollTrigger is created
+   * @param {Function}   [onReady]    — called after initial render is live
    */
   constructor(containerEl, scrollEl, imageUrls, onReady) {
     this.container = containerEl;
@@ -42,7 +131,9 @@ export default class ProjectsShader {
     this.imageUrls = imageUrls;
     this.onReady   = onReady;
 
-    this.textures        = [];
+    this.placeholder     = createPlaceholderTexture();
+    this.textures        = new Array(imageUrls.length).fill(this.placeholder);
+    this.displacement    = this.placeholder;
     this.currentIndex    = 0;
     this.targetIndex     = 0;
     this.isTransitioning = false;
@@ -59,22 +150,66 @@ export default class ProjectsShader {
     try {
       this._initRenderer();
       this._initScene();
-      await this._loadTextures();
-      if (this._destroyed) return;
       this._initMesh();
       this._initScrollTrigger();
       this._initResize();
       this._startRenderLoop();
-      if (this.onReady) this.onReady();
+
+      // Progressive Async Loading:
+      // Load Texture 0 & Displacement map first, stream the rest in background
+      this._loadProgressiveTextures();
     } catch (err) {
       console.warn('[ProjectsShader] Init failed:', err);
       this.container.classList.add('webgl-fallback');
     }
   }
 
+  async _loadProgressiveTextures() {
+    try {
+      // Step 1: Load Texture 0 and Displacement map concurrently
+      const [firstTex, dispTex] = await Promise.all([
+        loadAsyncTexture(this.imageUrls[0]),
+        loadAsyncTexture(DISPLACEMENT_PATH)
+      ]);
+
+      if (this._destroyed) return;
+
+      this.textures[0] = firstTex;
+      this.displacement = dispTex;
+
+      // Update shader uniforms for Texture 0 immediately
+      this.uniforms.u_texture0.value = firstTex;
+      this.uniforms.u_texture1.value = firstTex;
+      this.uniforms.u_displacement.value = dispTex;
+      this._setTextureResolution(0, firstTex);
+      this._setTextureResolution(1, firstTex);
+
+      if (this.onReady) this.onReady();
+
+      // Step 2: Stream load the rest in parallel in background
+      this.imageUrls.slice(1).forEach(async (url, idx) => {
+        const realIndex = idx + 1;
+        try {
+          const tex = await loadAsyncTexture(url);
+          if (this._destroyed) return;
+          this.textures[realIndex] = tex;
+
+          // If the user already scrolled to this section while it was loading
+          if (this.targetIndex === realIndex && !this.isTransitioning) {
+            this._transitionTo(realIndex);
+          }
+        } catch (e) {
+          console.warn(`[ProjectsShader] Failed loading texture: ${url}`, e);
+        }
+      });
+    } catch (err) {
+      console.warn('[ProjectsShader] Progressive load error:', err);
+    }
+  }
+
   _initRenderer() {
     const { clientWidth: w, clientHeight: h } = this.container;
-    this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
     this.renderer.setSize(w, h);
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, PIXEL_RATIO_CAP));
     this.container.appendChild(this.renderer.domElement);
@@ -84,35 +219,6 @@ export default class ProjectsShader {
     const { clientWidth: w, clientHeight: h } = this.container;
     this.scene  = new THREE.Scene();
     this.camera = new THREE.OrthographicCamera(-w / 2, w / 2, h / 2, -h / 2, -1, 1);
-  }
-
-  // ── Texture loading ────────────────────────────────────────
-  async _loadTextures() {
-    const loader = new THREE.TextureLoader();
-
-    const loadOne = (url) =>
-      new Promise((resolve, reject) => {
-        loader.load(
-          url,
-          (tex) => {
-            tex.wrapS = THREE.RepeatWrapping;
-            tex.wrapT = THREE.RepeatWrapping;
-            tex.minFilter = THREE.LinearFilter;
-            tex.generateMipmaps = false;
-            resolve(tex);
-          },
-          undefined,
-          reject
-        );
-      });
-
-    const [loadedTextures, displacement] = await Promise.all([
-      Promise.all(this.imageUrls.map((url) => loadOne(url))),
-      loadOne(DISPLACEMENT_PATH),
-    ]);
-
-    this.textures     = loadedTextures;
-    this.displacement = displacement;
   }
 
   // ── Mesh ──────────────────────────────────────────────────
@@ -133,7 +239,6 @@ export default class ProjectsShader {
       u_scale:              { value: this._reducedMotion ? 0 : SCALE_EFFECT },
     };
 
-    // Set initial texture resolutions
     this._setTextureResolution(0, this.textures[0]);
     this._setTextureResolution(1, this.textures[0]);
 
@@ -149,43 +254,38 @@ export default class ProjectsShader {
   }
 
   _setTextureResolution(index, texture) {
-    if (texture.image?.width) {
+    const img = texture?.image;
+    if (img?.width && img?.height) {
       this.uniforms[`u_textureResolution${index}`].value.set(
-        texture.image.width,
-        texture.image.height
+        img.width,
+        img.height
       );
     }
   }
 
   // ── ScrollTrigger + Lenis ─────────────────────────────────
   _initScrollTrigger() {
-    // Lenis smooth scroll
     this.lenis = new Lenis();
     this.lenis.scrollTo(0, { immediate: true });
     this.lenis.on('scroll', ScrollTrigger.update);
 
-    // ScrollTrigger driving transitions
     this.scrollTrigger = ScrollTrigger.create({
       trigger: this.scrollEl,
       start:   'top top',
-      // 200 matches the 200vh min-height of each project section —
-      // ensures every transition fires at the same relative scroll point
-      // (halfway through its section). Change 200 to adjust scroll distance.
-      end:     `+=${(this.textures.length - 1) * 200}%`,
-      // scrub lag in seconds — higher = more cinematic weighted feel. Range: 0.5 → 2.5
+      end:     `+=${(this.imageUrls.length - 1) * 200}%`,
       scrub:   1.2,
       onUpdate: (self) => {
-        const newIndex = Math.round(self.progress * (this.textures.length - 1));
+        const newIndex = Math.round(self.progress * (this.imageUrls.length - 1));
         this._transitionTo(newIndex);
       },
     });
   }
 
-  // ── Transition logic (direct port from reference) ─────────
+  // ── Transition logic ──────────────────────────────────────
   _transitionTo(index) {
     if (
       index < 0 ||
-      index >= this.textures.length ||
+      index >= this.imageUrls.length ||
       index === this.currentIndex ||
       this.isTransitioning
     ) {
@@ -193,11 +293,18 @@ export default class ProjectsShader {
       return;
     }
 
+    const nextTexture = this.textures[index];
+    // If texture is still loading placeholder, save targetIndex and transition when loaded
+    if (!nextTexture || nextTexture === this.placeholder) {
+      this.targetIndex = index;
+      return;
+    }
+
     this.targetIndex     = index;
     this.isTransitioning = true;
 
-    this.uniforms.u_texture1.value = this.textures[index];
-    this._setTextureResolution(1, this.textures[index]);
+    this.uniforms.u_texture1.value = nextTexture;
+    this._setTextureResolution(1, nextTexture);
 
     gsap.to(this.uniforms.u_progress, {
       value:    1,
@@ -205,8 +312,8 @@ export default class ProjectsShader {
       ease:     TRANSITION_EASE,
       overwrite: true,
       onComplete: () => {
-        this.uniforms.u_texture0.value  = this.textures[index];
-        this._setTextureResolution(0, this.textures[index]);
+        this.uniforms.u_texture0.value  = nextTexture;
+        this._setTextureResolution(0, nextTexture);
         this.uniforms.u_progress.value  = 0;
         this.currentIndex               = index;
         this.isTransitioning            = false;
@@ -223,8 +330,10 @@ export default class ProjectsShader {
   _startRenderLoop() {
     this._renderBound = (time) => {
       if (this._destroyed) return;
-      this.lenis.raf(time);
-      this.renderer.render(this.scene, this.camera);
+      this.lenis?.raf(time);
+      if (this.renderer && this.scene && this.camera) {
+        this.renderer.render(this.scene, this.camera);
+      }
       this._rafId = requestAnimationFrame(this._renderBound);
     };
     this._rafId = requestAnimationFrame(this._renderBound);
@@ -283,7 +392,6 @@ export default class ProjectsShader {
     }
     if (this.geometry) this.geometry.dispose();
     if (this.material) this.material.dispose();
-    if (this.textures) this.textures.forEach((t) => t?.dispose());
-    if (this.displacement) this.displacement.dispose();
+    if (this.placeholder) this.placeholder.dispose();
   }
 }
