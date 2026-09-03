@@ -129,26 +129,26 @@ const Section2 = ({ scrollYProgress }) => {
     const orbsRef = useRef([]);
     const title = "Sovi Lifestyle Ventures";
 
-    // Perspective: scales IN during transition (0.4-0.6)
-    const scale = useTransform(scrollYProgress, [0.4, 0.6], [0.8, 1]);
-    const rotate = useTransform(scrollYProgress, [0.4, 0.6], [5, 0]);
+    // Perspective: scales IN during transition (0.4-0.6) and stays locked at 1 through the end
+    const scale = useTransform(scrollYProgress, [0.4, 0.6, 1.0], [0.8, 1, 1], { clamp: true });
+    const rotate = useTransform(scrollYProgress, [0.4, 0.6, 1.0], [5, 0, 0], { clamp: true });
 
-    // Content animations in SECOND HALF (0.6-1.0)
+    // Content animations in SECOND HALF (0.6-1.0) — exact same animation style as CommitGen, locked to 1.0 at the end
     const getTitleCharY = (i, total) => {
         const start = 0.62 + (i / total) * 0.08;
-        return useTransform(scrollYProgress, [start, start + 0.06], ['100%', '0%']);
+        return useTransform(scrollYProgress, [start, start + 0.06, 1.0], ['100%', '0%', '0%'], { clamp: true });
     };
     const getTitleCharOpacity = (i, total) => {
         const start = 0.62 + (i / total) * 0.08;
-        return useTransform(scrollYProgress, [start, start + 0.05], [0, 1]);
+        return useTransform(scrollYProgress, [start, start + 0.05, 1.0], [0, 1, 1], { clamp: true });
     };
-    const imageX = useTransform(scrollYProgress, [0.7, 0.85], ['100%', '0%']);
-    const imageScale = useTransform(scrollYProgress, [0.7, 0.85], [0.7, 1]);
-    const imageOpacity = useTransform(scrollYProgress, [0.7, 0.78], [0, 1]);
-    const titleShiftY = useTransform(scrollYProgress, [0.78, 0.86], ['0%', '-35%']);
-    const descY = useTransform(scrollYProgress, [0.8, 0.9], ['50%', '0%']);
-    const descOpacity = useTransform(scrollYProgress, [0.8, 0.88], [0, 1]);
-    const ctaOpacity = useTransform(scrollYProgress, [0.86, 0.92], [0, 1]);
+    const imageX = useTransform(scrollYProgress, [0.7, 0.85, 1.0], ['100%', '0%', '0%'], { clamp: true });
+    const imageScale = useTransform(scrollYProgress, [0.7, 0.85, 1.0], [0.7, 1, 1], { clamp: true });
+    const imageOpacity = useTransform(scrollYProgress, [0.7, 0.78, 1.0], [0, 1, 1], { clamp: true });
+    const titleShiftY = useTransform(scrollYProgress, [0.78, 0.86, 1.0], ['0%', '-35%', '-35%'], { clamp: true });
+    const descY = useTransform(scrollYProgress, [0.8, 0.9, 1.0], ['50%', '0%', '0%'], { clamp: true });
+    const descOpacity = useTransform(scrollYProgress, [0.8, 0.88, 1.0], [0, 1, 1], { clamp: true });
+    const ctaOpacity = useTransform(scrollYProgress, [0.86, 0.92, 1.0], [0, 1, 1], { clamp: true });
 
     useEffect(() => {
         const orbs = orbsRef.current.filter(Boolean);
@@ -219,7 +219,7 @@ const Section2 = ({ scrollYProgress }) => {
                             A modern, high-performance website designed and built for a premium lifestyle and business venture agency.
                         </motion.p>
                     </div>
-                    <motion.a href="https://sovilifestyleventures.vercel.app" target="_blank" rel="noopener noreferrer"
+                    <motion.a href="https://sovilifestyleventures.com" target="_blank" rel="noopener noreferrer"
                         className="inline-flex items-center gap-1.5 mt-4 md:mt-5 px-5 md:px-6 py-2.5 md:py-3 text-sm rounded-full bg-white text-sky-950 font-bold hover:bg-sky-50 hover:scale-105 transition-all shadow-xl shadow-sky-950/30"
                         style={{ opacity: ctaOpacity }}>
                         Check it out →
@@ -252,7 +252,7 @@ const ProjectsSection = () => {
     });
 
     return (
-        <section id="projects" ref={containerRef} className="relative h-[800vh]">
+        <section id="projects" ref={containerRef} className="relative h-[850vh]">
             <Section1 scrollYProgress={scrollYProgress} />
             <Section2 scrollYProgress={scrollYProgress} />
         </section>

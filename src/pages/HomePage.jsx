@@ -3,7 +3,6 @@ import { useEffect, useState, useRef, lazy, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { motion } from 'framer-motion';
 import Lenis from 'lenis';
 import InnerTransition from '../components/transitions/InnerTransition';
 import Hero from '../components/Hero';
@@ -30,7 +29,6 @@ const PROJECT_IMAGES = [
 
 // ── BRIDGE CTA CUSTOMIZATION ─────────────────────────────────
 const CTA_TEXT = 'Check Out All My Projects';
-const CTA_ACCENT = '#7dd3fc';          // accent-cyan
 // ──────────────────────────────────────────────────────────────
 
 const BridgeCTA = () => {

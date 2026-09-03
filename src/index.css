@@ -109,18 +109,6 @@
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
-
-  .glass {
-    background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
-
-  .glass-hover:hover {
-    background: rgba(255, 255, 255, 0.12);
-  }
-
   .text-display-xl {
     font-size: clamp(4rem, 15vw, 12rem);
     line-height: 0.9;
@@ -141,38 +129,6 @@
 }
 
 /* Keyframe animations */
-@keyframes gradientFloat {
-
-  0%,
-  100% {
-    transform: translate(0, 0) scale(1);
-  }
-
-  25% {
-    transform: translate(5%, -5%) scale(1.05);
-  }
-
-  50% {
-    transform: translate(-5%, 5%) scale(0.95);
-  }
-
-  75% {
-    transform: translate(-3%, -3%) scale(1.02);
-  }
-}
-
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateX(-50%) translateY(-20px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
-}
-
 /* Slow spin for PFP ring - 120fps optimized */
 @keyframes spin-slow {
   from {

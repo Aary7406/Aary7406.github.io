@@ -42,7 +42,6 @@ export default defineConfig({
           'vendor-animation': ['framer-motion', 'gsap', 'lenis'],
           'vendor-three': ['three'],
           'vendor-router': ['react-router-dom'],
-          'vendor-gifuct': ['gifuct-js'],
         },
       },
     },

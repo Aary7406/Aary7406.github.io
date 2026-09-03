@@ -1,5 +1,4 @@
-// src/components/Services.jsx
-import { useRef, useEffect, useState, memo, useCallback } from 'react';
+import { useRef, useEffect, useState, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -280,8 +279,6 @@ const Services = () => {
                                 backgroundColor: PASTEL_BLUE,
                                 width: '150px',
                                 padding: '5px 0',
-                                // border: '2px solid rgba(255,255,255,0.4)',
-                                // boxShadow: '0 8px 32px rgba(168, 216, 234, 0.4), 0 4px 16px rgba(0,0,0,0.2)',
                             }}
                         >
                             <CursorMarquee text="Contact Now →" />
